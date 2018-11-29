@@ -21,8 +21,10 @@
 </template>
 
 <script>
-	import { Indicator ,Toast} from 'mint-ui';
+import { Indicator ,Toast} from 'mint-ui';
+
 export default {
+	
     components:{
         Indicator,
         Toast
@@ -68,7 +70,7 @@ export default {
 			})
         },
         
-        	//跳转到选择油品页
+		// 跳转到选择油品页
 		saveData(severName,Image,ProductID) {
 		    //点击时保存当前的服务项目名到vuex
 			window.sessionStorage.setItem('serviceName',severName)

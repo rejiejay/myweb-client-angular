@@ -29,7 +29,7 @@
         <div id="info">
             <img :src="infoData.src">
             <span>{{infoData.name}}</span>
-            <a @click="goReserveList">修改</a>
+            <a @click="routergoback">上一步</a>
         </div>
 
         <!-- 车辆信息 -->
@@ -261,7 +261,14 @@ export default {
           this.manuaData = res.data.Data.CarModels_List[0];
         }
       });
-    }
+    },
+
+    /**
+     * 跳转到路由
+     */
+    routergoback: function routergoback() {
+        this.$router.go(-1);
+    },
   }
 };
 </script>
