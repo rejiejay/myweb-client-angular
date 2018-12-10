@@ -92,8 +92,8 @@
                    <div  @click="goStoreInfo(Item.StoreID,Item.distance,Item.StoreProductID)" class="info">
                        <p class="one">{{Item.StoreName}}</p>
                        <div>
-                        <img class="first_img" v-for="star in Number(Item.StartLevel)" src="../assets/img/icon_star01@2x.png">
-                        <img  v-for="starTwo in Number(5-Item.StartLevel)" src="../assets/img/icon_star02@2x.png">
+                        <img class="first_img" v-for="(star, key) in Number(Item.StartLevel)" :key="key" src="../assets/img/icon_star01@2x.png">
+                        <img  v-for="(starTwo, key) in Number(5-Item.StartLevel)" :key="key" src="../assets/img/icon_star02@2x.png">
                         <span>{{Item.StartLevel}}.0</span>
                        </div>
                        <p class="three">
@@ -547,7 +547,7 @@ export default {
 .shop-type {
     position: fixed;
     left: 0px;
-    top: 192px;
+    top: 190px;
     width: 100%;
     height: auto;
     background: #fff;

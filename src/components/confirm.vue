@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div id="main">
+    <div >
+        <div id="main" style="-webkit-overflow-scrolling: auto">
             <div id="listTop"></div>
             <!-- 头部 -->
             <i id="allmap"></i>
@@ -28,8 +28,8 @@
                    <img class="icon" :src="storeInfo.StoreImg" alt="">
                    <p>{{storeInfo.StoreName}}</p>
                    <p>
-                       <img v-for="star in storeInfo.StartLevel"  src="../assets/img/icon_star01@2x.png" alt="">
-                       <img v-for="star1 in 5-storeInfo.StartLevel"   src="../assets/img/icon_star02@2x.png" alt="">
+                       <img v-for="(star, key) in storeInfo.StartLevel" :key="key" src="../assets/img/icon_star01@2x.png" alt="">
+                       <img v-for="(star1, key1) in 5-storeInfo.StartLevel" :key="key1 + '123'" src="../assets/img/icon_star02@2x.png" alt="">
                        <span>{{storeInfo.StartLevel}}.0</span>
                    </p>
                    <p>
@@ -52,14 +52,15 @@
             </div>
             <div class="time" @click="isShowTime=true">
                 <span>预约时间 :</span>
-                <input type="text" v-model="showTime" onfocus="this.blur()" placeholder="请选择预约时间">
-                <img src="../assets/img/icon_arrow@2x.png" alt="">
+                <p :class="[showTime=='请选择预约时间'?'':'black']">{{showTime}}</p>
+                <!-- <input type="text" v-model="showTime" onfocus="this.blur()" placeholder="请选择预约时间"> -->
+                <!-- <img src="../assets/img/icon_arrow@2x.png" alt=""> -->
             </div>
 
             	<!-- 8 -->
 			<p class="userName">
 				<span>联 &nbsp;系&nbsp; 人 :</span>
-				<input id="input" type="text" v-model="userInfo.userName" @focus="showInput" placeholder="联系人姓名">
+				<input id="input" type="text" v-model="userInfo.userName" @blur="backTop" placeholder="联系人姓名">
 			</p>
 
 			<!-- 9-->
@@ -136,6 +137,7 @@ import { Toast } from "mint-ui";
 import { Indicator } from "mint-ui";
 import { MessageBox } from "mint-ui";
 import "mint-ui/lib/style.min.css";
+import { domainToUnicode } from 'url';
 export default {
   components: {
     headers,
@@ -146,7 +148,7 @@ export default {
   data() {
     return {
       city: window.sessionStorage.getItem("cityName"),
-      showTime: "",
+      showTime: "请选择预约时间",
       isShowTime: true, // 控制预约时间模块显示隐藏
       // 预约时间-日期列表
       timeData: [],
@@ -172,6 +174,7 @@ export default {
     };
   },
   created() {
+    console.log(document.body.style)
     this.storeInfo = JSON.parse(window.sessionStorage.getItem("storeInfo"));
     this.distance = window.sessionStorage.getItem("distance");
 
@@ -201,6 +204,7 @@ export default {
   methods: {
     // 显示是否预约模块
     showpreviewBox() {
+      this.backTop()
       if (this.userInfo.userName == "") {
         return Toast({
           message: "请输入联系人",
@@ -218,6 +222,10 @@ export default {
     },
     //确认预约
     goReservationState() {
+      let goTop = document.getElementById("listTop");
+      if (goTop) {
+        goTop.scrollIntoView();
+      }
       window.sessionStorage.setItem("userName", this.userInfo.userName);
       window.sessionStorage.setItem("time", this.showTime);
       window.sessionStorage.setItem("isShowime", this.isShowTime);
@@ -321,6 +329,7 @@ export default {
       }
     },
 
+    // 前往地图
     goMap() {
       window.sessionStorage.setItem("userName", this.userInfo.userName);
       window.sessionStorage.setItem("time", this.showTime);
@@ -332,6 +341,7 @@ export default {
       }&address=${this.storeInfo.Address}`;
     },
 
+    // 联系商家
     goCall() {
       window.location.href = `tel:${this.storeInfo.ContactPhone}`;
     },
@@ -345,100 +355,81 @@ export default {
 
     //预约的日期展示
     getTime() {
-      var arr = new Array("日", "一", "二", "三", "四", "五", "六");
-      var date1 = new Date();
-      var date2 = new Date(date1);
-      // 往后1天
-      date2.setDate(date1.getDate() + 1);
-      var month = date2.getMonth() + 1;
-      var day = date2.getDate();
-      var week = date2.getDay();
-      if (month < 10) {
-        month = "0" + month;
-      }
-      if (day < 10) {
-        day = "0" + day;
-      }
-      var times = month + "-" + day + "(" + "周" + arr[week] + ")";
-      this.timeData.push({ time: times, isSelect: true, name: "明天" });
-      //2
-      date2.setDate(date1.getDate() + 2);
-      var month1 = date2.getMonth() + 1;
-      var day1 = date2.getDate();
-      var week1 = date2.getDay();
-      if (month1 < 10) {
-        month1 = "0" + month1;
-      }
-      if (day1 < 10) {
-        day1 = "0" + day1;
-      }
-      var times1 = month1 + "-" + day1 + "(" + "周" + arr[week1] + ")";
-      this.timeData.push({ time: times1, isSelect: false, name: "后天" });
-      //3
-      date2.setDate(date1.getDate() + 3);
-      var month3 = date2.getMonth() + 1;
-      var day3 = date2.getDate();
-      var week3 = date2.getDay();
-      if (month3 < 10) {
-        month3 = "0" + month3;
-      }
-      if (day3 < 10) {
-        day3 = "0" + day3;
-      }
-      var times3 = month3 + "-" + day3 + "(" + "周" + arr[week3] + ")";
-      this.timeData.push({ time: times3, isSelect: false, name: times3 });
-      //4
-      date2.setDate(date1.getDate() + 4);
-      var month4 = date2.getMonth() + 1;
-      var day4 = date2.getDate();
-      var week4 = date2.getDay();
-      if (month4 < 10) {
-        month4 = "0" + month4;
-      }
-      if (day4 < 10) {
-        day4 = "0" + day4;
-      }
-      var times4 = month4 + "-" + day4 + "(" + "周" + arr[week4] + ")";
-      this.timeData.push({ time: times4, isSelect: false, name: times4 });
-      //5
-      date2.setDate(date1.getDate() + 5);
-      var month5 = date2.getMonth() + 1;
-      var day5 = date2.getDate();
-      var week5 = date2.getDay();
-      if (month5 < 10) {
-        month5 = "0" + month5;
-      }
-      if (day5 < 10) {
-        day5 = "0" + day5;
-      }
-      var times5 = month5 + "-" + day5 + "(" + "周" + arr[week5] + ")";
-      this.timeData.push({ time: times5, isSelect: false, name: times5 });
-      //6
-      // date2.setDate(date1.getDate() + 6);
-      // var month6 = date2.getMonth() + 1;
-      // var day6 = date2.getDate();
-      // var week6 = date2.getDay();
-      // if (month6 < 10) {
-      //   month6 = "0" + month6;
-      // }
-      // if (day6 < 10) {
-      //   day6 = "0" + day6;
-      // }
-      // var times6 = month6 + "-" + day6 + "(" + "周" + arr[week6] + ")";
-      // this.timeData.push({ time: times6, isSelect: false, name: times6 });
-      // //7
-      // date2.setDate(date1.getDate() + 7);
-      // var month7 = date2.getMonth() + 1;
-      // var day7 = date2.getDate();
-      // var week7 = date2.getDay();
-      // if (month7 < 10) {
-      //   month7 = "0" + month7;
-      // }
-      // if (day7 < 10) {
-      //   day7 = "0" + day7;
-      // }
-      // var times7 = month7 + "-" + day7 + "(" + "周" + arr[week7] + ")";
-      // this.timeData.push({ time: times7, isSelect: false, name: times7 });
+      var arr = ['日','一','二','三','四','五','六']
+      var date1 = new Date().getTime();
+      console.log(date1)
+      // 后一天
+        var date2 = new Date(date1+(86400000*1));
+        var month = date2.getMonth() + 1;
+        var day = date2.getDate();
+        var week = date2.getDay();
+        if (month < 10) {
+            month = "0" + month;
+          }
+          if (day < 10) {
+            day = "0" + day;
+          }
+        var times = month + "-" + day + "(" + "周" +arr[week]+ ")";
+        console.log(times)
+        this.timeData.push({ time: times, isSelect: true, name: "明天" });
+        // 后两天
+        var date2 = new Date(date1+(86400000*2));
+        var month1 = date2.getMonth() + 1;
+        var day1 = date2.getDate();
+        var week1 = date2.getDay();
+         if (month1 < 10) {
+            month1 = "0" + month1;
+          }
+          if (day1 < 10) {
+            day1 = "0" + day1;
+          }
+        var times1 = month1 + "-" + day1 + "(" + "周" +arr[week1]+ ")";
+        console.log(times1)
+        this.timeData.push({ time: times1, isSelect: false, name: "后天" });
+
+        // 后三天
+        var date2 = new Date(date1+(86400000*3));
+        var month2 = date2.getMonth() + 1;
+        var day2 = date2.getDate();
+        var week2 = date2.getDay();
+         if (month2 < 10) {
+            month2 = "0" + month2;
+          }
+          if (day2 < 10) {
+            day2 = "0" + day2;
+          }
+        var times2 = month2 + "-" + day2 + "(" + "周" +arr[week2]+ ")";
+        console.log(times2)
+        this.timeData.push({ time: times2, isSelect: false, name: times2 });
+         // 后四天
+        var date2 = new Date(date1+(86400000*4));
+        var month3 = date2.getMonth() + 1;
+        var day3 = date2.getDate();
+        var week3 = date2.getDay();
+         if (month3 < 10) {
+            month3 = "0" + month3;
+          }
+          if (day3 < 10) {
+            day3 = "0" + day3;
+          }
+        var times3 = month3 + "-" + day3 + "(" + "周" +arr[week3]+ ")";
+        console.log(times3)
+        this.timeData.push({ time: times3, isSelect: false, name: times3 });
+         // 后五天
+        var date2 = new Date(date1+(86400000*5));
+        var month4 = date2.getMonth() + 1;
+        var day4 = date2.getDate();
+        var week4 = date2.getDay();
+         if (month4 < 10) {
+            month4 = "0" + month4;
+          }
+          if (day4 < 10) {
+            day4 = "0" + day4;
+          }
+        var times4 = month4 + "-" + day4 + "(" + "周" +arr[week4]+ ")";
+        console.log(times4)
+        this.timeData.push({ time: times4, isSelect: false, name: times4 });
+      
       console.log(this.timeData);
     },
 
@@ -477,9 +468,9 @@ export default {
     },
 
     //
-    showInput() {
-      document.querySelector("#input").scrollIntoView();
-    },
+    // showInput() {
+    //   document.querySelector("#input").scrollIntoView();
+    // },
 
     // 获取本地存储里的值
     getSessionStorage() {
@@ -488,6 +479,14 @@ export default {
         this.isShowTime = window.sessionStorage.getItem("isShowTime");
         this.userInfo.userName = window.sessionStorage.getItem("userName");
       }
+    },
+
+    // 失去焦点
+    backTop(){
+      let goTop = document.getElementById("listTop");
+      if (goTop) {
+        goTop.scrollIntoView();
+      }
     }
   }
 };
@@ -495,12 +494,10 @@ export default {
 <style lang="stylus" scoped>
 #main {
 	width: 100%;
-	height: 100vh;
-	position:fixed;
-	top:0px;
-	left:0px;
-	overflow :hidden;
-
+  height:100vh;
+  // position:fixed;
+  top:0px;
+  // left:0px;
 	#header {
 		width: 100%;
 		height: 131px;
@@ -559,7 +556,7 @@ export default {
 			width: 140px;
 			height: 48px;
 			border-radius: 24px;
-			border: 1px solid rgba(204, 204, 204, 1);
+			border: 1.5px solid rgba(204, 204, 204, 1);
 			font-size: 24px;
 			line-height: 48px;
 			color: #999999;
@@ -579,7 +576,7 @@ export default {
 		}
 
 		.active {
-			border: 1px solid rgba(229, 0, 18, 1);
+			border: 1.5px solid rgba(229, 0, 18, 1);
 			color: #E50012;
 		}
 	}
@@ -726,6 +723,23 @@ export default {
 			box-sizing: border-box;
 			color: #333;
 		}
+    span {
+     left:30px;
+    }
+    .black {
+      color:#333;
+    }
+    p {
+      width:80%;
+      height:88px;
+      line-height:88px;
+			border: none;
+			font-size: 28px;
+			padding-left: 156px;
+			box-sizing: border-box;
+			color: #ccc;
+      text-align:left;
+    }
 
 		input::-webkit-input-placeholder { /* WebKit browsers */
 			color: #ccc;
@@ -917,7 +931,7 @@ export default {
 	// 预约时间盒子
 	#time {
 		width: 100%;
-		height: 100vh;
+    height:100vh;
 		position: fixed;
 		top: 0px;
 		background: rgba(0, 0, 0, 0.5);
@@ -932,6 +946,7 @@ export default {
 			height: 520px;
 			background-color: #fff;
 			position: fixed;
+      z-index:99;
 			bottom: 0px;
 
 			.header {

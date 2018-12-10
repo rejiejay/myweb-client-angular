@@ -127,7 +127,7 @@
 					<div class="kilometer-input-title">上一次保养公里数</div>
 
 					<div class="kilometer-input-container flex-start-center">
-						<input id="input" type="number" v-model="infoData.lastKm" placeholder="请填写仪表公里数(首次可不填)" />
+						<input id="input" type="number" @blur="hideKeyBard" v-model="infoData.lastKm" placeholder="请填写仪表公里数(首次可不填)" />
 					</div>
 				</div>
 
@@ -253,10 +253,11 @@ export default {
             this.infoData.lastTime = year + '-' + month
 		},
 
-		// 超链接跳转我的车辆 
-		goMyCar(){
-			window.location.href = `http://${window.location.host}/wx20/register/index.html#/mycar/${this.infoData.CustomerID}/${'1'}/${this.$route.query.openId}/${window.sessionStorage.getItem('name')}`;
-			//window.location.href = `http://192.168.31.113:8000#/mycar/${this.infoData.CustomerID}/${'1'}/${this.$route.query.openId}/${window.sessionStorage.getItem('name')}`;
+		/**
+		 * 超链接跳转我的车辆
+		 */
+		goMyCar: function goMyCar() {
+			window.location.href = `http://${window.location.host}/wx20/register/index.html#/mycar/${this.infoData.CustomerID}/${this.$route.query.openId}?callBackUrl=carReservation&objectName=${window.sessionStorage.getItem('name')}`;
 		},
 
 		//跳转到选择油品页
@@ -533,7 +534,7 @@ export default {
 				}
 				.carName {
 					width:95%;
-					height:30px;
+					height:35px;
 					overflow :hidden;
 				}
 				img {
@@ -834,6 +835,7 @@ export default {
                 height: 80px;
                 border-radius: 5px;
                 border: 1px solid #ddd;
+				font-size:28px;
             }
 
 		}
