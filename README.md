@@ -1,30 +1,16 @@
-# new-project
+# 个人网站 前端 第N期 angular.js 版 
 
-> A Vue.js project
+此项目与JAVA spring boot 项目互相进行配合
 
-## Build Setup
+## 项目预览
 
-``` bash
-# install dependencies
-npm install
+[https://www.rejiejay.cn/](http://119.29.140.46/)
 
-# serve with hot reload at localhost:8080
-npm run dev
+## 项目搭建
+见 angular搭建文档.md
 
-# build for production with minification
-npm run build
+## 项目启动
 
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
+```cmd
+npm start
 ```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
