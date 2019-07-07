@@ -11,4 +11,26 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
+  // 此处可以声明变量，然后变量会绑定到页面上（花括号{{}}，（生命周期：应该是初始化生成
+
+  /**
+   * 构造方法
+   */
+  constructor() {
+    /**
+     * 这里可以改变属性的值，可能是因为还没有渲染，因为是构造方法
+     * [class]=属性
+     * [innerHTML]=值
+     * 数组循环 *ngFor="let item of list"
+     * *ngIf="false"
+     * [ngSwitch]=属性
+     * [ngClass]="{'red': false, 'blue': true}"
+     * (keyup)="method($event)" 监听事件
+     * 公共方法:定义到服务(service)里面,就可以实现方法跨组件调用
+     */
+  }
+
+  gotoLink() {
+    console.log(1);
+  }
 }
