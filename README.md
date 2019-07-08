@@ -9,6 +9,9 @@
 ## 项目搭建
 见 angular搭建文档.md
 
+## 常用
+ng g module module/login1 --routing
+
 ## 项目启动
 
 ```cmd

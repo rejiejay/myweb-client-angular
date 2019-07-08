@@ -6,10 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './routing/app-routing.module';
 
 import { AppComponent } from './component/app/app.component';
-import { LoginComponent } from './component/login/login.component';
 
 import { MyServiceService } from './service/my-service.service';
-import { LoginRoutingModule } from './login/login.routing';
 
 /**
  * Angular 应用是模块化的，它拥有自己的模块化系统，称作 NgModule。
@@ -21,13 +19,12 @@ import { LoginRoutingModule } from './login/login.routing';
   declarations: [ // 组件声明
     AppComponent, // 要先声明了才能用
     // 声明路由，倚赖注入
-    LoginComponent
+    // LoginComponent
   ],
   imports: [ // 模块引用（这里应该是倚赖注入，但是不知道为啥要这样做
     BrowserModule,
     HttpClientModule, // 引入Http模块
     AppRoutingModule, // 已经注入路由模块
-    LoginRoutingModule,
     FormsModule // 引入模块，就可以在视图里面使用 [(ngModel)]="inputValue"
   ],
   providers: [ // 配置服务(service)的地方

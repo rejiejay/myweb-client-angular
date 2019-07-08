@@ -18,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less']
 })
-export class AppComponent  {
+export class AppComponent {
   // 此处可以声明变量，然后变量会绑定到页面上（花括号{{}}，（生命周期：应该是初始化生成
 
   /**
@@ -42,8 +42,6 @@ export class AppComponent  {
      */
   }
 
-  ngOnInit() {
-  }
   /**
    * 注册了个点击事件
    */
