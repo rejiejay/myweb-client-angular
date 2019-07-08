@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 /**
- * 大概是配置路由的
- * 路由要先在app.module里面依赖注入，在这边引入才不会报错
+ * 配置路由
+ * 因为这里所属 app.module 模块下面的路由，所以必须先在app.module依赖注入
  */
 const routes: Routes = [
-  // { path: 'login', component: LoginComponent },
-  { path: 'login', loadChildren: () => import('./../module/login/login.module').then(m => m.LoginModule) },
+  // 懒加载
+  { path: 'login', loadChildren: () => import('./module/login/login.module').then(m => m.LoginModule) },
   // 过滤错误的组件
   // { path: '**', component: PathNotFoundComponent }
 ];

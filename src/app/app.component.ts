@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { MyServiceService } from './../../service/my-service.service';
+import { MyServiceService } from './app.service';
 import { ActivatedRoute } from '@angular/router';
 
 
