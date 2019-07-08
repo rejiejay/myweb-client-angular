@@ -1,10 +1,15 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms'; // 双向数据绑定
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 
-import { FormsModule } from '@angular/forms'; // 双向数据绑定
+import { AppComponent } from './app.component';
+import { LoginComponentComponent } from './login-component/login-component.component';
+
+import { MyServiceService } from './service/my-service.service';
+
 
 /**
  * Angular 应用是模块化的，它拥有自己的模块化系统，称作 NgModule。
@@ -13,15 +18,19 @@ import { FormsModule } from '@angular/forms'; // 双向数据绑定
  * 它还可以导入一些由其它模块中导出的功能，并导出一些指定的功能供其它 NgModule 使用。
  */
 @NgModule({
-  declarations: [ // 声明，要先声明了才能用
-    AppComponent
+  declarations: [ // 组件声明
+    AppComponent, // 要先声明了才能用
+    LoginComponentComponent // 声明路由，倚赖注入
   ],
-  imports: [
+  imports: [ // 模块引用（这里应该是倚赖注入，但是不知道为啥要这样做
     BrowserModule,
-    AppRoutingModule,
+    HttpClientModule, // 引入Http模块
+    AppRoutingModule, // 已经注入路由模块
     FormsModule // 引入模块，就可以在视图里面使用 [(ngModel)]="inputValue"
   ],
-  providers: [],
+  providers: [ // 配置服务(service)的地方
+    MyServiceService
+  ],
   bootstrap: [AppComponent] // 启动模板使用声明的 AppComponent 组件
 })
 export class AppModule { }

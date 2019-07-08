@@ -2,6 +2,7 @@
 
 <!-- 首页 -->
 <div class="home">
-    <div class="home-link" (click)="gotoLink()">登录页</div>
+    <div (click)="gotoLink()">console.log</div>
+    <a [routerLink]="[ '/login' ]">登录页</a>
     <input type="text" >
 </div>
