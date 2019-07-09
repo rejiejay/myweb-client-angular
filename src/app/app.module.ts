@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app.routing'; // 路由
 import { AppComponent } from './app.component';
+import { HomeComponent } from './module/home/home.component';
 import { MyServiceService } from './app.service';
 
 /**
@@ -21,6 +22,7 @@ import { MyServiceService } from './app.service';
    */
   declarations: [
     AppComponent,
+    HomeComponent,
   ],
 
   /**

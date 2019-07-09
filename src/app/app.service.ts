@@ -7,6 +7,10 @@ import { HttpClient } from '@angular/common/http';
  * 必须要在module里面声明(引入并且配置)才可以进行使用
  */
 @Injectable({
+  /**
+   * 告诉 Angular在根注入器中注册这个服务,这也是使用CLI生成服务时默认的方式.
+   * 这种方式注册,不需要再@NgModule装饰器中写providers,而且在代码编译打包时,可以执行摇树优化，会移除所有没在应用中使用过的服务。推荐使用此种方式注册服务.
+   */
   providedIn: 'root'
 })
 export class MyServiceService {

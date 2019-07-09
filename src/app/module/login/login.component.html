@@ -1,3 +1,9 @@
-<p>
-    login works!!!
-</p>
+<div class="login">
+    <div class="login-input">
+        <input type="text" [(ngModel)]="password" />
+    </div>
+
+    <div class="login-submit">
+        <div (click)="loginSubmit()">登录</div>
+    </div>
+</div>
