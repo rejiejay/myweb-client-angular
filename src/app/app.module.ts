@@ -7,6 +7,12 @@ import { AppRoutingModule } from './app.routing'; // 路由
 import { AppComponent } from './app.component';
 import { HomeComponent } from './module/home/home.component';
 import { MyServiceService } from './app.service';
+import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { registerLocaleData } from '@angular/common';
+import zh from '@angular/common/locales/zh';
+
+registerLocaleData(zh); // 中文
 
 /**
  * 模块化的Angular应用系统，称作 NgModule。
@@ -31,8 +37,10 @@ import { MyServiceService } from './app.service';
    */
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule, // 引入Http模块
     FormsModule, // 引入模块，就可以在视图里面使用 [(ngModel)]="inputValue"
+    NgZorroAntdModule, // ant模块
 
     AppRoutingModule, // 注入自定义路由模块
   ],
@@ -41,7 +49,9 @@ import { MyServiceService } from './app.service';
    * 配置服务(service)
    */
   providers: [
-    MyServiceService
+    { provide: NZ_I18N, useValue: zh_CN },
+
+    MyServiceService,
   ],
 
   /**

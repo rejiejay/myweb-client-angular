@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import CryptoJS from 'crypto-js';
+
+import { environment } from './../environments/environment';
 
 /**
  * 必须要在module里面声明(引入并且配置)才可以进行使用
@@ -14,6 +17,11 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class MyServiceService {
+
+  public headers = new HttpHeaders().set(
+    'Content-type',
+    'application/json; charset=UTF-8'
+  );
 
   /**
    * 构造函数
@@ -31,6 +39,7 @@ export class MyServiceService {
      */
     // this.http.get('url').subscribe(response => { console.log(response); });
   }
+
   getRxjsData() {
     /**
      * 和 new Promise() 是有些类似的;
@@ -43,4 +52,22 @@ export class MyServiceService {
     });
   }
 
+  /**
+   * 通用post请求
+   * @param url string
+   * @param body any
+   */
+  postRxjsHttp(url: string, body: any) {
+    // md5加密
+    const bodyStr = JSON.stringify(body);
+    console.log(bodyStr);
+    const bodyMd5 = CryptoJS.MD5(bodyStr).toString();
+    console.log(bodyMd5);
+
+    const headers = this.headers;
+
+    this.http.post(`${environment.baseUrl}${url}`, body, { headers });
+
+    return bodyMd5;
+  }
 }

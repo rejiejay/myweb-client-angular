@@ -46,7 +46,7 @@ export class AppComponent {
    * 注册了个点击事件
    */
   gotoLink() {
-    console.log(1);
+    this.storage.postRxjsHttp('1', {a: 1});
   }
 
 }

@@ -16,3 +16,13 @@ ng new myweb-client-angular
 
 改写package.json
 ng serve --open --proxy-config proxy.conf.json
+
+ng add ng-zorro-antd
+- y (? Add icon assets [ Detail: https://ng.ant.design/components/icon/en ] (y/N)
+- N (Set up custom theme file [ Detail: https://ng.ant.design/docs/customize-theme/en ] (y/N)
+- zh_CN (Choose your locale code
+- blank (Choose template to create project: (Use arrow keys)
+
+npm install crypto-js --save -d
+
+npm install ts-md5 --save -d
