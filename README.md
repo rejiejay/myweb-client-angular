@@ -13,7 +13,17 @@
 ng g module module/login1 --routing
 
 ## 项目启动
-
 ```cmd
 npm start
+```
+
+## 单元测试
+- –code-coverage -cc 代码覆盖率报告, 默认这个是不开启的, 因为生成报告的速度还是比较慢的. 
+- –colors 输出结果使用各种颜色 默认开启 
+- –single-run -sr 执行测试, 但是不检测文件变化 默认不开启 
+- –progress 把测试的过程输出到控制台 默认开启 
+- –sourcemaps -sm 生成sourcemaps 默认开启 
+- –watch -w 运行测试一次, 并且检测变化 默认开启
+```cmd
+ng test
 ```

@@ -53,21 +53,48 @@ export class MyServiceService {
   }
 
   /**
+   * 数字加密
+   * MD5加密
+   * AES-128-CBC对称加密算法(128位AES/ECB/PKCS7Padding加密/解密)
+   * BASE64 加密
+   * @param reqParam 请求体
+   * @param username 需要加密的用户名称
+   * @param token 加密所需的凭证
+   */
+  encryptSignature(reqParam: string, username: string, token: string) {
+    interface EncryptData { username: string; token: string; }
+    const encryptData: EncryptData = { username, token };
+
+    // md5加密
+    const bodyMd5 = CryptoJS.MD5(reqParam).toString(); // 小写
+
+    const key = bodyMd5.substring(0, 16); // 密钥key 需要为16位。
+    const iv = bodyMd5.substring(bodyMd5.length - 16); // 向量 也是16位
+
+    const cipher = CryptoJS.createCipheriv('aes-128-cbc', key, iv); // AES-128-CBC对称加密算法
+
+    // 开始对数据进行加密
+    let crypted = cipher.update(encryptData, 'utf8', 'binary');
+    crypted += cipher.final('binary');
+
+    // 转为base64位进行传输(混淆)
+    const cryptedArray = CryptoJS.enc.Utf8.parse(crypted);
+    const cryptedbase64 = CryptoJS.enc.Base64.stringify(cryptedArray);
+
+    return cryptedbase64;
+  }
+
+  /**
    * 通用post请求
    * @param url string
-   * @param body any
+   * @param body object
    */
-  postRxjsHttp(url: string, body: any) {
-    // md5加密
+  postRxjsHttp(url: string, body: object) {
     const bodyStr = JSON.stringify(body);
-    console.log(bodyStr);
-    const bodyMd5 = CryptoJS.MD5(bodyStr).toString();
-    console.log(bodyMd5);
-
     const headers = this.headers;
 
-    this.http.post(`${environment.baseUrl}${url}`, body, { headers });
+    // headers.set('x-rejiejay-authorization', '');
 
-    return bodyMd5;
+    this.http.post(`${environment.baseUrl}${url}`, body, { headers });
   }
 }
