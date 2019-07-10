@@ -17,7 +17,6 @@ import { environment } from './../environments/environment';
   providedIn: 'root'
 })
 export class MyServiceService {
-
   public headers = new HttpHeaders().set(
     'Content-type',
     'application/json; charset=UTF-8'
@@ -52,11 +51,34 @@ export class MyServiceService {
     });
   }
 
+
   /**
-   * 数字加密
-   * MD5加密
-   * AES-128-CBC对称加密算法(128位AES/ECB/PKCS7Padding加密/解密)
-   * BASE64 加密
+   * AES 加密
+   * @param encryptData 待加密内容
+   * @param sKey aesKey 32 字节的AES密钥
+   * @param ivParameter 初始化向量 16 字节的初始化向量
+   * @return 返回经 BASE64 处理之后的密文
+   */
+  // tslint:disable-next-line: variable-name
+  encryptAES(encryptData: string, sKey: string, ivParameter: string) {
+    // 先以 UTF-8 编码解码参数 返回 any 类型
+    const content = CryptoJS.enc.Utf8.parse(encryptData);
+    const aesKey = CryptoJS.enc.Utf8.parse(sKey);
+    const iv = CryptoJS.enc.Utf8.parse(ivParameter);
+
+    // 加密
+    const encrypted = CryptoJS.AES.encrypt(content, aesKey, {
+      // tslint:disable-next-line: object-literal-shorthand
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+
+    return CryptoJS.enc.Base64.stringify(encrypted.ciphertext);
+  }
+
+  /**
+   * 数字签名加密
    * @param reqParam 请求体
    * @param username 需要加密的用户名称
    * @param token 加密所需的凭证
@@ -64,32 +86,19 @@ export class MyServiceService {
   encryptSignature(reqParam: string, username: string, token: string) {
     interface EncryptData { username: string; token: string; }
     const encryptData: EncryptData = { username, token };
+    const encryptDataStr = JSON.stringify(encryptData);
 
     // md5加密
     const bodyMd5 = CryptoJS.MD5(reqParam).toString(); // 小写
 
-    const key = CryptoJS.enc.Utf8.parse(bodyMd5.substring(0, 16)); // 密钥key 需要为16位。
-    const iv = CryptoJS.enc.Utf8.parse(bodyMd5.substring(bodyMd5.length - 16)); // 向量 也是16位
+    const sKey = bodyMd5.substring(0, 32); // 密钥key 32 字节的AES密钥
+    const ivParameter = bodyMd5.substring(bodyMd5.length - 16); // 向量 也是16位
 
-    /**
-     * CipherOption, 加密的一些选项:
-     *   mode: 加密模式, 可取值(CBC, CFB, CTR, CTRGladman, OFB, ECB), 都在 CryptoJS.mode 对象下
-     *   padding: 填充方式, 可取值(Pkcs7, AnsiX923, Iso10126, Iso97971, ZeroPadding, NoPadding), 都在 CryptoJS.pad 对象下
-     *   iv: 偏移量, mode === ECB 时, 不需要 iv
-     * 返回的是一个加密对象
-     */
-    const crypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(encryptData), key, {
-      mode: CryptoJS.mode.ECB,
-      padding: CryptoJS.pad.Pkcs7,
-      // tslint:disable-next-line: object-literal-shorthand
-      iv: iv
-    });
+    console.log('encryptData', encryptDataStr);
+    console.log('sKey', sKey);
+    console.log('ivParameter', ivParameter);
 
-    // 转为base64位进行传输(混淆)
-    const cryptedArray = CryptoJS.enc.Utf8.parse(crypted);
-    const cryptedbase64 = CryptoJS.enc.Base64.stringify(cryptedArray);
-
-    return cryptedbase64;
+    return this.encryptAES(encryptDataStr, sKey, ivParameter);
   }
 
   /**
@@ -100,8 +109,19 @@ export class MyServiceService {
   postRxjsHttp(url: string, body: object) {
     const bodyStr = JSON.stringify(body);
     const headers = this.headers;
+    const username = 'rejiejay'; // 这个是固定
+    const token = localStorage.getItem('x-rejiejay-token');
+    // tslint:disable-next-line: radix
+    const tokenexpired = parseInt(localStorage.getItem('x-rejiejay-token-expired'));
 
-    // headers.set('x-rejiejay-authorization', '');
+    if (new Date().getTime() > tokenexpired) { // 当前时间是否大于过期时间
+      // 当前时间大于过期时间的情况下
+
+    }
+
+    // 加密生成签名
+    const signature = this.encryptSignature(bodyStr, username, token);
+    headers.set('x-rejiejay-authorization', signature); // 设置请求头
 
     this.http.post(`${environment.baseUrl}${url}`, body, { headers });
   }

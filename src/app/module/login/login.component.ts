@@ -39,8 +39,8 @@ export class LoginComponent implements OnInit {
     this.storage.loginSubmit(password).subscribe(
       (val: LoginResult) => {
         if (val.result === 1) {
-          localStorage.setItem('x-rejiejay-authorization', val.data.token);
-          localStorage.setItem('x-rejiejay-authorization-expired', val.data.tokenexpired.toString());
+          localStorage.setItem('x-rejiejay-token', val.data.token);
+          localStorage.setItem('x-rejiejay-token-expired', val.data.tokenexpired.toString());
         } else {
           alert(val.message);
         }

@@ -24,5 +24,4 @@ ng add ng-zorro-antd
 - blank (Choose template to create project: (Use arrow keys)
 
 npm install crypto-js --save -d
-
-npm install ts-md5 --save -d
+npm install uuid --save -d
