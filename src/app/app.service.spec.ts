@@ -1,13 +1,14 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async, inject } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MyServiceService } from './app.service';
 
 /**
  * describe函数封装一个 "测试集"
  */
 describe(
-  'Service: MyServiceService',  // 预期的话语
+  'MyServiceService 测试集',  // 预期的话语
   () => {
 
     /**
@@ -16,7 +17,10 @@ describe(
      */
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [MyServiceService]
+        providers: [MyServiceService],
+        imports: [
+          HttpClientTestingModule
+        ]
       });
     });
 
@@ -24,7 +28,7 @@ describe(
      * describe函数封装一个 "测试集" 下的 it函数封装 测试用例
      */
     it(
-      'should ...', // 预期的话语
+      'encryptSignature数字加密', // 预期的话语
       inject([MyServiceService], // 倚赖注入
         (service: MyServiceService) => { // 注入后即可使用
           /**
@@ -49,7 +53,13 @@ describe(
            * toNotMatch() 等同 !new RegExp().test()
            * toThrow() 检查function是否会抛出一个错误
            */
-          expect(service).toBeTruthy();
+          const reqParam = 'username=rejiejay&password=DFqew1938167';
+          const username = 'rejiejay';
+          const token = 'c4ca4238a0b923820dcc509a6f75849b';
+          // tslint:disable-next-line: max-line-length
+          const expectResult = 'h01LkvMB9oZbBpa+XxZcVr2Fj4KlJ6lcd8KtjKMBKaH7mw6A2b6tTFe5qZyBZUi7Es4fo58aOO79jXS4MgeiCykNkDQQurj7NhYQYTJED4Y=';
+
+          expect(service.encryptSignature(reqParam, username, token)).toBe(expectResult);
         })
     );
   }

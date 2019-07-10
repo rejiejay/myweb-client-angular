@@ -46,7 +46,11 @@ export class AppComponent {
    * 注册了个点击事件
    */
   gotoLink() {
-    this.storage.postRxjsHttp('1', {a: 1});
+    const reqParam = 'username=rejiejay&password=DFqew1938167';
+    const username = 'rejiejay';
+    const token = 'c4ca4238a0b923820dcc509a6f75849b';
+
+    console.log(this.storage.encryptSignature(reqParam, username, token));
   }
 
 }

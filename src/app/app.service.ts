@@ -68,14 +68,22 @@ export class MyServiceService {
     // md5加密
     const bodyMd5 = CryptoJS.MD5(reqParam).toString(); // 小写
 
-    const key = bodyMd5.substring(0, 16); // 密钥key 需要为16位。
-    const iv = bodyMd5.substring(bodyMd5.length - 16); // 向量 也是16位
+    const key = CryptoJS.enc.Utf8.parse(bodyMd5.substring(0, 16)); // 密钥key 需要为16位。
+    const iv = CryptoJS.enc.Utf8.parse(bodyMd5.substring(bodyMd5.length - 16)); // 向量 也是16位
 
-    const cipher = CryptoJS.createCipheriv('aes-128-cbc', key, iv); // AES-128-CBC对称加密算法
-
-    // 开始对数据进行加密
-    let crypted = cipher.update(encryptData, 'utf8', 'binary');
-    crypted += cipher.final('binary');
+    /**
+     * CipherOption, 加密的一些选项:
+     *   mode: 加密模式, 可取值(CBC, CFB, CTR, CTRGladman, OFB, ECB), 都在 CryptoJS.mode 对象下
+     *   padding: 填充方式, 可取值(Pkcs7, AnsiX923, Iso10126, Iso97971, ZeroPadding, NoPadding), 都在 CryptoJS.pad 对象下
+     *   iv: 偏移量, mode === ECB 时, 不需要 iv
+     * 返回的是一个加密对象
+     */
+    const crypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(encryptData), key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+      // tslint:disable-next-line: object-literal-shorthand
+      iv: iv
+    });
 
     // 转为base64位进行传输(混淆)
     const cryptedArray = CryptoJS.enc.Utf8.parse(crypted);
