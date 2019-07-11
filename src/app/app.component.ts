@@ -44,7 +44,7 @@ export class AppComponent {
   /**
    * 注册了个点击事件
    */
-  async gotoLink() {
+  async clicktest() {
     const getresult = await this.storage.apiget('/security?username=rejiejay&password=DFqew1938167');
 
     console.log(getresult);
