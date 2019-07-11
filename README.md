@@ -30,5 +30,6 @@ ng test
 ```
 
 ## 全局变量
+localStorage.setItem('x-rejiejay-password', password);
 localStorage.setItem('x-rejiejay-authorization', val.data.token);
 localStorage.setItem('x-rejiejay-authorization-expired', val.data.tokenexpired.toString());

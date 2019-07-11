@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import CryptoJS from 'crypto-js';
 
 import { environment } from './../environments/environment';
+import { Consequencer, consequent } from './../utils/Consequencer';
 
 /**
  * 必须要在module里面声明(引入并且配置)才可以进行使用
@@ -26,7 +28,7 @@ export class MyServiceService {
    * 构造函数
    * @param http 声明注入的http模块
    */
-  constructor(public http: HttpClient) {
+  constructor(public http: HttpClient, public router: Router) {
     /**
      * rxjs
      */
@@ -106,23 +108,83 @@ export class MyServiceService {
    * @param url string
    * @param body object
    */
-  postRxjsHttp(url: string, body: object) {
+  async postRxjsHttp(url: string, body: object) {
+    interface RefreshTokenBody { // 刷新 token 凭证 请求参数
+      password: string;
+    }
+
+    interface AuthorizationResult { // 刷新 token 凭证 返回参数
+      result: number;
+      data: {
+        token: string;
+        tokenexpired: number;
+      };
+      message: string;
+    }
+
+    let httpRequestResult: Consequencer;
+
     const bodyStr = JSON.stringify(body);
     const headers = this.headers;
     const username = 'rejiejay'; // 这个是固定
-    const token = localStorage.getItem('x-rejiejay-token');
+    let token = localStorage.getItem('x-rejiejay-token');
     // tslint:disable-next-line: radix
-    const tokenexpired = parseInt(localStorage.getItem('x-rejiejay-token-expired'));
+    let tokenexpired = parseInt(localStorage.getItem('x-rejiejay-token-expired'));
 
     if (new Date().getTime() > tokenexpired) { // 当前时间是否大于过期时间
-      // 当前时间大于过期时间的情况下
+      // 当前时间大于过期时间的情况下, 主动刷新token
+      const password = localStorage.getItem('x-rejiejay-password');
+      const refreshTokenBody: RefreshTokenBody = {
+        password
+      };
 
+      // 主动刷新token
+      await this.http.post(`${environment.baseUrl}/refresh/rejiejay`, refreshTokenBody, { headers }).subscribe(
+        (val: AuthorizationResult) => {
+          if (val.result === 1) {
+            // 刷新成功
+            token = val.data.token;
+            tokenexpired = val.data.tokenexpired;
+            localStorage.setItem('x-rejiejay-token', token);
+            localStorage.setItem('x-rejiejay-token-expired', tokenexpired.toString());
+            httpRequestResult = consequent.success(null, null);
+          } else {
+            alert(val.message);
+            httpRequestResult = consequent.error(val.message, 0, null);
+          }
+        },
+        error => {
+          alert(error);
+          httpRequestResult = consequent.error(error, 0, null);
+        }
+      );
+
+      if (httpRequestResult.result !== 1) {
+        // 不为1 表示主动刷新token失败，跳转到登录页面
+        this.router.navigate(['login']);
+      }
     }
 
     // 加密生成签名
     const signature = this.encryptSignature(bodyStr, username, token);
     headers.set('x-rejiejay-authorization', signature); // 设置请求头
 
-    this.http.post(`${environment.baseUrl}${url}`, body, { headers });
+    // 开始通用请求
+    await this.http.post(`${environment.baseUrl}${url}`, body, { headers }).subscribe(
+      (val: Consequencer) => {
+        if (val.result === 1) {
+          httpRequestResult = consequent.success(val.data, 'successful');
+        } else {
+          alert(val.message);
+          httpRequestResult = consequent.error(val.message, val.result, val.data);
+        }
+      },
+      error => {
+        alert(error);
+        httpRequestResult = consequent.error(error, 0, null);
+      }
+    );
+
+    return httpRequestResult; // 返回封装的结果即可
   }
 }

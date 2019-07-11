@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 
 import { MyServiceService } from './app.service';
-import { ActivatedRoute } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 /**
  * 提供Angular组件的配置数据的注解类。
@@ -28,7 +27,7 @@ export class AppComponent {
    * 通过 public route: ActivatedRoute 引入路由
    * this.route 调用里面的方法，可以打印出来
    */
-  constructor(public storage: MyServiceService, public route: ActivatedRoute) {
+  constructor(public storage: MyServiceService, public route: ActivatedRoute, public router: Router) {
     /**
      * 这里可以改变属性的值，可能是因为还没有渲染，因为是构造方法
      * [class]=属性
@@ -46,11 +45,7 @@ export class AppComponent {
    * 注册了个点击事件
    */
   gotoLink() {
-    const reqParam = 'username=rejiejay&password=DFqew1938167';
-    const username = 'rejiejay';
-    const token = 'c4ca4238a0b923820dcc509a6f75849b';
-
-    console.log(this.storage.encryptSignature(reqParam, username, token));
+    this.router.navigate(['login']);
   }
 
 }
