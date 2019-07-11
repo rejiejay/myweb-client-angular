@@ -19,10 +19,34 @@ import { Consequencer, consequent } from './../utils/Consequencer';
   providedIn: 'root'
 })
 export class MyServiceService {
-  public headers = new HttpHeaders().set(
-    'Content-type',
-    'application/json; charset=UTF-8'
-  );
+  public loading = {
+    /**
+     * 显示加载框
+     */
+    show: () => {
+      let Loading = document.getElementById('rejiejay-loading');
+      // 判断加载框是否不存在
+      if (!Loading) {
+        // 不存在的情况下才创建
+        Loading = document.createElement('div');
+        Loading.id = 'rejiejay-loading';
+        // tslint:disable-next-line: max-line-length
+        Loading.innerHTML = `<div class="loading"><div class="loader"><div><div><div><div><div><div></div></div></div></div></div></div></div></div>`;
+        document.body.appendChild(Loading);
+      }
+    },
+    /**
+     * 关闭加载框
+     */
+    hide: () => {
+      const Loading = document.getElementById('rejiejay-loading');
+      // 判断加载框是否存在
+      if (Loading) {
+        document.body.classList.remove('el-loading-parent--relative');
+        document.body.removeChild(Loading);
+      }
+    }
+  };
 
   /**
    * 构造函数
@@ -53,9 +77,8 @@ export class MyServiceService {
     });
   }
 
-
   /**
-   * AES 加密
+   * AES-128-CBC-PKCS7Padding 对称加密
    * @param encryptData 待加密内容
    * @param sKey aesKey 32 字节的AES密钥
    * @param ivParameter 初始化向量 16 字节的初始化向量
@@ -96,19 +119,19 @@ export class MyServiceService {
     const sKey = bodyMd5.substring(0, 32); // 密钥key 32 字节的AES密钥
     const ivParameter = bodyMd5.substring(bodyMd5.length - 16); // 向量 也是16位
 
-    console.log('encryptData', encryptDataStr);
-    console.log('sKey', sKey);
-    console.log('ivParameter', ivParameter);
-
     return this.encryptAES(encryptDataStr, sKey, ivParameter);
   }
 
   /**
-   * 通用post请求
-   * @param url string
-   * @param body object
+   * 通用请求
+   * 1. 弹出和关闭loading框
+   * 2. 判断token是否过期，主动刷新
+   * 3. 封装通用的get 和 post 请求，减少代码量
+   * @param requestMethod 请求方法get 和 post （小写
+   * @param requestURL 请求地址
+   * @param requesBody 请求体（get请求不需要填写
    */
-  async postRxjsHttp(url: string, body: object) {
+  async GeneralRxjsHttp(requestMethod: string, requestURL: string, requesBody: object) {
     interface RefreshTokenBody { // 刷新 token 凭证 请求参数
       password: string;
     }
@@ -124,22 +147,30 @@ export class MyServiceService {
 
     let httpRequestResult: Consequencer;
 
-    const bodyStr = JSON.stringify(body);
-    const headers = this.headers;
     const username = 'rejiejay'; // 这个是固定
     let token = localStorage.getItem('x-rejiejay-token');
     // tslint:disable-next-line: radix
-    let tokenexpired = parseInt(localStorage.getItem('x-rejiejay-token-expired'));
+    let tokenexpired = parseInt(localStorage.getItem('x-rejiejay-token-expired') || '0');
 
-    if (new Date().getTime() > tokenexpired) { // 当前时间是否大于过期时间
-      // 当前时间大于过期时间的情况下, 主动刷新token
+    // 弹出模态框
+    this.loading.show();
+
+    /**
+     * 判断 当前时间是否大于过期时间
+     * 当前时间大于过期时间的情况下, 主动刷新token
+     */
+    if (new Date().getTime() > tokenexpired) {
       const password = localStorage.getItem('x-rejiejay-password');
       const refreshTokenBody: RefreshTokenBody = {
         password
       };
 
       // 主动刷新token
-      await this.http.post(`${environment.baseUrl}/refresh/rejiejay`, refreshTokenBody, { headers }).subscribe(
+      await this.http.post(`${environment.baseUrl}/refresh/rejiejay`, refreshTokenBody, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json; charset=UTF-8',
+        })
+      }).subscribe(
         (val: AuthorizationResult) => {
           if (val.result === 1) {
             // 刷新成功
@@ -162,29 +193,82 @@ export class MyServiceService {
       if (httpRequestResult.result !== 1) {
         // 不为1 表示主动刷新token失败，跳转到登录页面
         this.router.navigate(['login']);
+        this.loading.hide(); // 关闭模态框
+        return httpRequestResult;
       }
     }
 
-    // 加密生成签名
-    const signature = this.encryptSignature(bodyStr, username, token);
-    headers.set('x-rejiejay-authorization', signature); // 设置请求头
-
-    // 开始通用请求
-    await this.http.post(`${environment.baseUrl}${url}`, body, { headers }).subscribe(
-      (val: Consequencer) => {
-        if (val.result === 1) {
-          httpRequestResult = consequent.success(val.data, 'successful');
-        } else {
-          alert(val.message);
-          httpRequestResult = consequent.error(val.message, val.result, val.data);
-        }
-      },
-      error => {
-        alert(error);
-        httpRequestResult = consequent.error(error, 0, null);
+    /**
+     * 判断请求方法，开始通用请求
+     */
+    if (requestMethod === 'get') {
+      // 加密生成签名
+      let reqParam = '';
+      const indexOfrequestURL = requestURL.indexOf('?');
+      if (indexOfrequestURL !== -1) { // 判断是否有问号
+        reqParam = requestURL.substring(indexOfrequestURL + 1);
       }
-    );
 
+      const signature = this.encryptSignature(reqParam, username, token);
+
+      // 开始通用get请求
+      await this.http.get(`${environment.baseUrl}${requestURL}`, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-rejiejay-authorization': signature
+        })
+      }).subscribe(
+        (val: Consequencer) => {
+          if (val.result === 1) {
+            httpRequestResult = consequent.success(val.data, 'successful');
+          } else {
+            alert(val.message);
+            httpRequestResult = consequent.error(val.message, val.result, val.data);
+          }
+        },
+        error => {
+          alert(error);
+          httpRequestResult = consequent.error(error, 0, null);
+        }
+      );
+
+    } else {
+      // 加密生成签名
+      const bodyStr = JSON.stringify(requesBody);
+      const signature = this.encryptSignature(bodyStr, username, token);
+
+      // 开始通用post请求
+      await this.http.post(`${environment.baseUrl}${requestURL}`, requesBody, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-rejiejay-authorization': signature
+        })
+      }).subscribe(
+        (val: Consequencer) => {
+          if (val.result === 1) {
+            httpRequestResult = consequent.success(val.data, 'successful');
+          } else {
+            alert(val.message);
+            httpRequestResult = consequent.error(val.message, val.result, val.data);
+          }
+        },
+        error => {
+          alert(error);
+          httpRequestResult = consequent.error(error, 0, null);
+        }
+      );
+
+    }
+
+    this.loading.hide(); // 关闭模态框
     return httpRequestResult; // 返回封装的结果即可
+  }
+
+  async apiget(requestURL: string) {
+    return this.GeneralRxjsHttp('get', requestURL, null);
+  }
+
+  async apipost(requestURL: string, requesBody: object) {
+    return this.GeneralRxjsHttp('post', requestURL, requesBody);
   }
 }

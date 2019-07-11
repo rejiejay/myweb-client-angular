@@ -44,8 +44,11 @@ export class AppComponent {
   /**
    * 注册了个点击事件
    */
-  gotoLink() {
-    this.router.navigate(['login']);
+  async gotoLink() {
+    const getresult = await this.storage.apiget('/security?username=rejiejay&password=DFqew1938167');
+
+    console.log(getresult);
+    // this.router.navigate(['login']);
   }
 
 }

@@ -10,3 +10,8 @@ if (environment.production) {
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));
+
+/**
+ * 移除加载框（提升用户体验的东西
+ */
+document.body.removeChild(document.getElementById('rejiejay-loading'));
