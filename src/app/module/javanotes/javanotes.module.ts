@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import { JavaNotesComponent } from './javanotes.component';
 import { JavaNotesRoutingModule } from './javanotes.routing';
-import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [JavaNotesComponent],
