@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AngularEditorModule } from '@kolkov/angular-editor';
 
 import { JavaNotesComponent } from './javanotes.component';
 import { JavaNotesRoutingModule } from './javanotes.routing';
@@ -10,6 +11,7 @@ import { JavaNotesRoutingModule } from './javanotes.routing';
   imports: [
     CommonModule,
     FormsModule,
+    AngularEditorModule,
 
     JavaNotesRoutingModule
   ]

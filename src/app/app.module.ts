@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // 双向数据绑定
 import { HttpClientModule } from '@angular/common/http';
+import { AngularEditorModule } from '@kolkov/angular-editor';
 
 import { AppRoutingModule } from './app.routing'; // 路由
 import { AppComponent } from './app.component';
@@ -41,6 +42,7 @@ registerLocaleData(zh); // 中文
     HttpClientModule, // 引入Http模块
     FormsModule, // 引入模块，就可以在视图里面使用 [(ngModel)]="inputValue"
     NgZorroAntdModule, // ant模块
+    AngularEditorModule,
 
     AppRoutingModule, // 注入自定义路由模块
   ],

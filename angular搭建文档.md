@@ -25,3 +25,5 @@ ng add ng-zorro-antd
 
 npm install crypto-js --save -d
 npm install uuid --save -d
+
+npm install @kolkov/angular-editor --save

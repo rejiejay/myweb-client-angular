@@ -15,6 +15,7 @@ export class JavaNotesComponent implements OnInit {
    */
   public title: string;
   public urlImage: SafeUrl; // 动态给img的src赋值blob,报不安全错误
+  public htmlContent: string;
 
   @ViewChild('uploadFile', null) uploadFile: ElementRef;
 
