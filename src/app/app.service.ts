@@ -104,6 +104,7 @@ export class MyServiceService {
    * @param requesBody 请求体（get请求不需要填写
    */
   async GeneralRxjsHttp(requestMethod: string, requestURL: string, requesBody: object) {
+    const self = this;
     interface RefreshTokenBody { // 刷新 token 凭证 请求参数
       password: string;
     }
@@ -123,6 +124,72 @@ export class MyServiceService {
     let token = localStorage.getItem('x-rejiejay-token');
     // tslint:disable-next-line: radix
     let tokenexpired = parseInt(localStorage.getItem('x-rejiejay-token-expired') || '0');
+    const password = localStorage.getItem('x-rejiejay-password');
+    const refreshTokenBody: RefreshTokenBody = { password };
+
+    /**
+     * 生成请求头
+     */
+    const createHttpHeaders = () => {
+      token = localStorage.getItem('x-rejiejay-token');
+      // tslint:disable-next-line: radix
+      tokenexpired = parseInt(localStorage.getItem('x-rejiejay-token-expired') || '0');
+      /**
+       * 生成签名
+       */
+      let signature = '';
+      if (requestMethod === 'get') {
+        // 加密生成签名
+        let reqParam = '';
+        const indexOfrequestURL = requestURL.indexOf('?');
+        if (indexOfrequestURL !== -1) { // 判断是否有问号
+          reqParam = requestURL.substring(indexOfrequestURL + 1);
+        }
+
+        signature = this.encryptSignature(reqParam, username, token);
+      } else {
+        // 加密生成签名
+        const bodyStr = JSON.stringify(requesBody);
+        signature = this.encryptSignature(bodyStr, username, token);
+      }
+
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-rejiejay-authorization': signature
+      });
+
+      return headers;
+    };
+
+    /**
+     * 主动刷新token
+     */
+    const activeRefresh = () => new Promise(
+      (resolve, reject) => self.http.post(`${environment.baseUrl}/login/refresh/rejiejay`, refreshTokenBody, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-rejiejay-authorization': self.encryptSignature(JSON.stringify(refreshTokenBody), username, token)
+        })
+      }).subscribe(
+        (val: AuthorizationResult) => {
+          if (val.result === 1) {
+            // 刷新成功
+            token = val.data.token;
+            tokenexpired = val.data.tokenexpired;
+            localStorage.setItem('x-rejiejay-token', token);
+            localStorage.setItem('x-rejiejay-token-expired', tokenexpired.toString());
+            resolve(consequent.success(null, null));
+          } else {
+            alert(val.message);
+            reject(httpRequestResult = consequent.error(val.message, 0, null));
+          }
+        },
+        error => {
+          alert(error);
+          reject(consequent.error(error, 0, null));
+        }
+      )
+    );
 
     // 弹出模态框
     MyLoading.show();
@@ -132,37 +199,7 @@ export class MyServiceService {
      * 当前时间大于过期时间的情况下, 主动刷新token
      */
     if (new Date().getTime() > tokenexpired) {
-      const password = localStorage.getItem('x-rejiejay-password');
-      const refreshTokenBody: RefreshTokenBody = {
-        password
-      };
-
-      // 主动刷新token
-      httpRequestResult = await new Promise(
-        (resolve, reject) => this.http.post(`${environment.baseUrl}/refresh/rejiejay`, refreshTokenBody, {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/json; charset=UTF-8',
-          })
-        }).subscribe(
-          (val: AuthorizationResult) => {
-            if (val.result === 1) {
-              // 刷新成功
-              token = val.data.token;
-              tokenexpired = val.data.tokenexpired;
-              localStorage.setItem('x-rejiejay-token', token);
-              localStorage.setItem('x-rejiejay-token-expired', tokenexpired.toString());
-              resolve(consequent.success(null, null));
-            } else {
-              alert(val.message);
-              reject(httpRequestResult = consequent.error(val.message, 0, null));
-            }
-          },
-          error => {
-            alert(error);
-            reject(consequent.error(error, 0, null));
-          }
-        )
-      ).then(
+      httpRequestResult = await activeRefresh().then(
         (resolve: Consequencer) => resolve,
         (error: Consequencer) => error,
       );
@@ -179,68 +216,78 @@ export class MyServiceService {
      * 判断请求方法，开始通用请求
      */
     if (requestMethod === 'get') {
-      // 加密生成签名
-      let reqParam = '';
-      const indexOfrequestURL = requestURL.indexOf('?');
-      if (indexOfrequestURL !== -1) { // 判断是否有问号
-        reqParam = requestURL.substring(indexOfrequestURL + 1);
-      }
-
-      const signature = this.encryptSignature(reqParam, username, token);
+      // 通用get请求
+      const generalGetHttp = () => new Promise(
+        (resolve, reject) => this.http.get(`${environment.baseUrl}${requestURL}`, { headers: createHttpHeaders() }).subscribe(
+          (val: Consequencer) => {
+            if (val.result === 1) {
+              resolve(consequent.success(val.data, 'successful'));
+            } else if (val.result === 40004) { // 后端验证表示过期
+              // 需要前端主动刷新token(所以这里不需要弹出模态框)
+              reject(consequent.error(val.message, 40004, val.data));
+            } else {
+              alert(val.message);
+              reject(consequent.error(val.message, val.result, val.data));
+            }
+          },
+          error => {
+            alert(error);
+            reject(consequent.error(error, 0, null));
+          }
+        )
+      );
 
       // 开始通用get请求
-      httpRequestResult = await new Promise((resolve, reject) => this.http.get(`${environment.baseUrl}${requestURL}`, {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json; charset=UTF-8',
-          'x-rejiejay-authorization': signature
-        })
-      }).subscribe(
-        (val: Consequencer) => {
-          if (val.result === 1) {
-            resolve(consequent.success(val.data, 'successful'));
-          } else {
-            alert(val.message);
-            reject(consequent.error(val.message, val.result, val.data));
-          }
-        },
-        error => {
-          alert(error);
-          reject(consequent.error(error, 0, null));
-        }
-      )).then(
+      httpRequestResult = await generalGetHttp().then(
         (resolve: Consequencer) => resolve,
-        (error: Consequencer) => error,
+        async (error: Consequencer) => {
+          if (error.result === 40004) {
+            return await activeRefresh().then(
+              (resolve: Consequencer) => resolve,
+              (reject: Consequencer) => reject,
+            );
+          } else {
+            return error;
+          }
+        }
       );
 
     } else {
-      // 加密生成签名
-      const bodyStr = JSON.stringify(requesBody);
-      const signature = this.encryptSignature(bodyStr, username, token);
-
-      // 开始通用post请求
-      httpRequestResult = await new Promise((resolve, reject) => this.http.post(`${environment.baseUrl}${requestURL}`, requesBody, {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json; charset=UTF-8',
-          'x-rejiejay-authorization': signature
-        })
-      }).subscribe(
-        (val: Consequencer) => {
-          if (val.result === 1) {
-            resolve(consequent.success(val.data, 'successful'));
-          } else {
-            alert(val.message);
-            reject(consequent.error(val.message, val.result, val.data));
+      // 通用post请求
+      const generalPostHttp = () => new Promise(
+        (resolve, reject) => self.http.post(`${environment.baseUrl}${requestURL}`, requesBody, { headers: createHttpHeaders() }).subscribe(
+          (val: Consequencer) => {
+            if (val.result === 1) {
+              resolve(consequent.success(val.data, 'successful'));
+            } else if (val.result === 40004) { // 后端验证表示过期
+              // 需要前端主动刷新token(所以这里不需要弹出模态框)
+              reject(consequent.error(val.message, 40004, val.data));
+            } else {
+              alert(val.message);
+              reject(consequent.error(val.message, val.result, val.data));
+            }
+          },
+          error => {
+            alert(error);
+            reject(consequent.error(error, 0, null));
           }
-        },
-        error => {
-          alert(error);
-          reject(consequent.error(error, 0, null));
-        }
-      )).then(
-        (resolve: Consequencer) => resolve,
-        (error: Consequencer) => error,
+        )
       );
 
+      // 开始通用post请求
+      httpRequestResult = await generalPostHttp().then(
+        (resolve: Consequencer) => resolve,
+        async (error: Consequencer) => {
+          if (error.result === 40004) {
+            return await activeRefresh().then(
+              (resolve: Consequencer) => resolve,
+              (reject: Consequencer) => reject,
+            );
+          } else {
+            return error;
+          }
+        }
+      );
     }
 
     MyLoading.hide(); // 关闭模态框
