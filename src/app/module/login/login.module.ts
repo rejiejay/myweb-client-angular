@@ -12,7 +12,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
     CommonModule,
     FormsModule,
 
-    NzButtonModule,
+    NzButtonModule, // 引入 ng-zorro-antd 组件
 
     LoginRoutingModule
   ]
