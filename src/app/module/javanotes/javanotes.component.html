@@ -43,5 +43,86 @@
             </div>
         </div>
 
+        <div class="form-bottom-btn">
+            <div class="form-btn">
+                <div class="flex-center" style="border: 1px solid #ddd;">编辑</div>
+            </div>
+            <div class="form-btn">
+                <div class="flex-center" style="background-color: #1890ff; color: #fff;">新增</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 随机显示部分 -->
+    <div class="java-notes-random flex-column-center">
+        <div class="random-center">
+
+            <div class="random-title flex-start-bottom">
+                <div class="random-title-des flex-rest">{{randomTitle ? randomTitle : '标题'}}</div>
+
+                <div class="title-btn flex-start-center">
+                    <div class="btn-click" (click)="refreshTheRandom($event)">
+                        <button nz-button nzType="default">刷新</button>
+                    </div>
+                    <div class="btn-click" (click)="editTheRandom($event)">
+                        <button nz-button nzType="primary">编辑</button>
+                    </div>
+                    <div class="btn-click" (click)="delTheRandom($event)">
+                        <button nz-button nzType="danger">删除</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="random-image flex-center" *ngIf="randomImageUrl">
+                <img [src]="randomImageUrl" alt="RandomImageUrl" />
+            </div>
+
+            <div class="random-describe">
+                <div class="random-describe-content" [innerHTML]="randomHtmlContent">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 列表部分 -->
+    <div class="java-notes-list flex-column-center">
+        <div class="list-center">
+
+            <!-- 标题 -->
+            <div class="list-title flex-start-bottom">
+                <div class="flex-rest">All records</div>
+                <div class="list-refresh">
+                    <button nz-button nzType="primary">刷新</button>
+                </div>
+                <div class="list-title-select">
+                    <select>
+                        <option value="time">时间排序</option>
+                        <option value="random">随机排序</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="record-list-main">
+
+                    <div class="list-main-item list-item-left">
+                        <div class="main-item-container">
+                            <div class="list-item-title">val.title</div>
+                            <!-- <div class="list-item-content" [innerHTML]="randomHtmlContent"></div> -->
+                            <div class="list-item-content">val.constent</div>
+                        </div>
+                    </div>
+
+                    <div class="list-main-item">
+                        <div class="main-item-container">
+                            <div class="list-item-title">val.title</div>
+                            <!-- <div class="list-item-content" [innerHTML]="randomHtmlContent"></div> -->
+                            <div class="list-item-content">val.constent</div>
+                        </div>
+                    </div>
+
+            </div>
+
+        </div>
     </div>
 </div>

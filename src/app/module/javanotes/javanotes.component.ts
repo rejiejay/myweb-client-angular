@@ -17,6 +17,14 @@ export class JavaNotesComponent implements OnInit {
   public urlImage: SafeUrl; // 动态给img的src赋值blob,报不安全错误
   public htmlContent: string;
 
+  /**
+   * 随机显示部分
+   */
+  public randomTitle: string;
+  // tslint:disable-next-line: max-line-length
+  public randomImageUrl: string;
+  public randomHtmlContent: string;
+
   @ViewChild('uploadFile', null) uploadFile: ElementRef;
 
   constructor(public sanitizer: DomSanitizer, public storage: JavaNotesService, public location: Location) {
@@ -35,6 +43,14 @@ export class JavaNotesComponent implements OnInit {
 
       // uploadFile.value = ''; // 因为考虑到用户会重复上传, 重复上传不会触发 onchange 所以要清空一下
     };
+
+    /**
+     * 修复 kolkov/angular-editor 内联样式 高度写死问题
+     */
+    setTimeout(() => {
+      const DOM = document.getElementsByClassName('angular-editor-textarea')[0];
+      DOM.setAttribute('style', 'min-height: 350px;');
+    }, 200);
   }
 
   /**
@@ -44,5 +60,26 @@ export class JavaNotesComponent implements OnInit {
     const uploadFile = this.uploadFile.nativeElement;
 
     uploadFile.click();
+  }
+
+  /**
+   * 刷新随机显示部分
+   */
+  refreshTheRandom(event: any) {
+    console.log('刷新随机显示部分');
+  }
+
+  /**
+   * 编辑随机显示部分
+   */
+  editTheRandom(event: any) {
+    console.log('编辑随机显示部分');
+  }
+
+  /**
+   * 删除随机显示部分
+   */
+  delTheRandom(event: any) {
+    console.log('删除随机显示部分');
   }
 }

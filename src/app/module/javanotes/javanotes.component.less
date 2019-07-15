@@ -9,8 +9,13 @@
     width           : 100%;
     min-height      : 100%;
     background-color: #f5f5f5;
+
+    padding-bottom: 135px;
 }
 
+/**
+ * 表单提交部分
+ */
 .java-notes-form {
     padding-top: 35px;
 
@@ -62,7 +67,218 @@
         width      : 720px;
 
         .textarea-content {
-            min-height     : 350px;
+            min-height: 350px;
+            background: #fff;
+
+            .angular-editor-wrapper {
+                min-height: 350px;
+            }
+
+            .angular-editor-textarea {
+                min-height: 350px !important;
+            }
         }
     }
+
+    .form-bottom-btn {
+        padding-top: 15px;
+        width      : 720px;
+
+        .form-btn {
+            width         : 100%;
+            padding-bottom: 15px;
+
+            div {
+                width        : 100%;
+                height       : 45px;
+                border-radius: 5px;
+                background   : #fff;
+                cursor       : pointer;
+            }
+        }
+    }
+}
+
+/**
+ * 随机显示部分
+ */
+.java-notes-random {
+    padding-top: 35px;
+
+    .random-center {
+        width: 720px;
+    }
+
+    .random-title {
+        .random-title-des {
+            font-size  : 18px;
+            font-weight: bold;
+            color      : @black1;
+        }
+
+        .btn-click {
+            padding-left: 15px;
+        }
+    }
+
+    .random-image {
+        padding-top: 15px;
+
+        img {
+            display: block;
+            width  : 100%;
+            height : 100%;
+        }
+    }
+
+    .random-describe {
+        padding-top: 15px;
+
+        .random-describe-content {
+            padding   : 15px;
+            background: #fff;
+        }
+    }
+}
+
+/**
+ * 随机显示部分
+ */
+.java-notes-list {
+    padding-top: 35px;
+
+    .list-center {
+        width: 720px;
+    }
+
+    .list-title {
+        .flex-rest {
+            font-size  : 18px;
+            font-weight: bold;
+            color      : @black1;
+        }
+
+        .list-refresh {
+            padding-right: 15px;
+        }
+
+        .list-title-select select {
+            background: #f5f5f5;
+            border    : none;
+            outline   : none;
+        }
+
+        option {
+            margin: 2.5px 15px;
+        }
+
+        select:focus {
+            border    : none;
+            box-shadow: none;
+        }
+    }
+
+    // 列表框架部分
+    .record-list-main {
+        overflow   : hidden;
+        padding-top: 15px;
+
+        .list-item-left {
+            margin-right: 10px;
+        }
+    }
+
+    // 列表内容部分
+    .list-main-item {
+        width        : 352.5px;
+        float        : left;
+        border       : 1px solid #ddd;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background   : #fbfbfb;
+        cursor       : pointer;
+
+        .list-item-title {
+            color        : @black1;
+            font-weight  : bold;
+            font-size    : 16px;
+            padding      : 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .list-item-content {
+            padding: 15px;
+            color  : @black3  !important;
+        }
+    }
+
+    .list-main-item:hover {
+        border    : 1px solid #1890ff;
+        background: #fff;
+    }
+
+    // 分页部分
+    .record-list-pagination {
+        padding-top: 15px;
+
+        .list-pagination-item {
+            height               : 30px;
+            min-width            : 30px;
+            text-align           : center;
+            line-height          : 30px;
+            border               : 1px solid #ddd;
+            border-radius        : 4px;
+            margin-right         : 10px;
+            cursor               : pointer;
+            -webkit-touch-callout: none;
+            /* iOS Safari */
+            -webkit-user-select: none;
+            /* Chrome/Safari/Opera */
+            -khtml-user-select: none;
+            /* Konqueror */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer/Edge */
+            user-select: none;
+            /* Non-prefixed version, currently not supported by any browser */
+        }
+
+        // 省略号
+        .list-pagination-point {
+            margin-right: 10px;
+        }
+
+        .list-pagination-input {
+            .pagination-input-container {
+                margin-right : 15px;
+                width        : 45px;
+                line-height  : 30px;
+                border-radius: 2px;
+                border       : 1px solid #ddd;
+
+                input {
+                    text-align: center;
+                }
+            }
+
+            .pagination-input-submit {
+                padding      : 0px 10px;
+                line-height  : 30px;
+                border-radius: 4px;
+                border       : 1px solid #ddd;
+                cursor       : pointer;
+            }
+        }
+
+        .pagination-item-selected,
+        .list-pagination-item:hover,
+        .pagination-input-submit:hover {
+            border: 1px solid #1890ff;
+            color : #1890ff;
+        }
+
+    }
+
+
 }
