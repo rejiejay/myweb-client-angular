@@ -25,6 +25,26 @@ export class JavaNotesComponent implements OnInit {
   public randomImageUrl: string;
   public randomHtmlContent: string;
 
+  /**
+   * 列表部分
+   */
+  // 列表排序
+  // @param time 时间排序 就是 默认排序
+  // @param random 随机排序
+  public listSortType = 'time';
+  public listAll = [
+    // {
+    //   id: 0,
+    //   title: '',
+    //   imageUrl: '',
+    //   htmlContent: '',
+    // }
+  ];
+  // 分页相关
+  public pageNum = 1; // 页码
+  public pageTotal = 1; // 一共有多少页数据
+  public pageJumpInto: number; // 页面输入跳转
+
   @ViewChild('uploadFile', null) uploadFile: ElementRef;
 
   constructor(public sanitizer: DomSanitizer, public storage: JavaNotesService, public location: Location) {
@@ -81,5 +101,28 @@ export class JavaNotesComponent implements OnInit {
    */
   delTheRandom(event: any) {
     console.log('删除随机显示部分');
+  }
+
+  /**
+   * 列表部分方法
+   */
+  // 页数转换为页面需要的array方法
+  pageTotalToArray() {
+    return new Array(this.pageTotal).fill('').map((val, key) => key);
+  }
+  // 页数转换为页面需要的倒数5页面array方法
+  pageToRecipArray() {
+    return new Array(this.pageTotal).fill('').map((val, key) => (key + 1)).slice(-5);
+  }
+  // 页数转换为页面需要的区间页面array方法
+  pageToIntervalArray() {
+    const pageNum = this.pageNum;
+    const intervalArray = [];
+
+    for (let i = -2; i <= 2; i++) {
+      intervalArray.push((pageNum + i));
+    }
+
+    return intervalArray;
   }
 }
