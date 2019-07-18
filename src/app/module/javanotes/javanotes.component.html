@@ -8,6 +8,10 @@
         </div>
 
         <div class="notes-form-img">
+            <div class="img-del-btn" *ngIf="imageId">
+                <div class="flex-center">删除该图片</div>
+            </div>
+
             <input type="file" name="file" #uploadFile style="display: none;" />
 
             <div class="img-content flex-center" (click)="uploadImage($event)">
@@ -48,7 +52,7 @@
                 <div class="flex-center" style="border: 1px solid #ddd;">编辑</div>
             </div>
             <div class="form-btn">
-                <div class="flex-center" style="background-color: #1890ff; color: #fff;">新增</div>
+                <div class="flex-center" (click)="addJavaNotes()" style="background-color: #1890ff; color: #fff;">新增</div>
             </div>
         </div>
 

@@ -6,6 +6,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 
 import { JavaNotesComponent } from './javanotes.component';
 import { JavaNotesRoutingModule } from './javanotes.routing';
+import { MyServiceService } from './../../app.service';
 
 @NgModule({
   declarations: [JavaNotesComponent],
@@ -16,6 +17,13 @@ import { JavaNotesRoutingModule } from './javanotes.routing';
     NzButtonModule,
 
     JavaNotesRoutingModule
-  ]
+  ],
+
+  /**
+   * 配置服务(service)
+   */
+  providers: [
+    MyServiceService,
+  ],
 })
 export class JavaNotesModule { }

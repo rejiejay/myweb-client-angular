@@ -3,6 +3,8 @@ import { Location } from '@angular/common';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 import { JavaNotesService } from './javanotes.service';
+import { MyServiceService } from './../../app.service';
+import { TimeConvert } from './../../../utils/TimeConvert';
 
 @Component({
   selector: 'app-javanotes',
@@ -14,7 +16,9 @@ export class JavaNotesComponent implements OnInit {
    * 表单输入部分
    */
   public title: string;
+  @ViewChild('uploadFile', null) uploadFile: ElementRef;
   public urlImage: SafeUrl; // 动态给img的src赋值blob,报不安全错误
+  public imageId: string; // 图片唯一标识
   public htmlContent: string;
 
   /**
@@ -45,9 +49,8 @@ export class JavaNotesComponent implements OnInit {
   public pageTotal = 1; // 一共有多少页数据
   public pageJumpInto: number; // 页面输入跳转
 
-  @ViewChild('uploadFile', null) uploadFile: ElementRef;
-
-  constructor(public sanitizer: DomSanitizer, public storage: JavaNotesService, public location: Location) {
+  // tslint:disable-next-line: max-line-length
+  constructor(public basestorage: MyServiceService, public sanitizer: DomSanitizer, public storage: JavaNotesService, public location: Location) {
   }
 
   ngOnInit() {
@@ -80,6 +83,42 @@ export class JavaNotesComponent implements OnInit {
     const uploadFile = this.uploadFile.nativeElement;
 
     uploadFile.click();
+  }
+
+  async addJavaNotes() {
+    interface UploadData { title: string; imageId: string; htmlContent: string; }
+    const htmlContent = this.htmlContent;
+    const imageId = this.imageId;
+    let title = this.title;
+
+    // 内容不可为空
+    if (!htmlContent) {
+      return alert('内容不能为空!');
+    }
+
+    // 如果没有输入标题, 使用默认标题即可
+    if (!title) {
+      title = TimeConvert.dateToYYYYmmDDhhMM00(new Date());
+    }
+
+    // 开始上传
+    const uploadData: UploadData = { title, imageId, htmlContent };
+    const uploaResult = await this.basestorage.apipost('/java/notes/add', uploadData);
+
+    if (uploaResult.result !== 1) {
+      // 表示上传失败
+      console.log(uploaResult);
+      return alert(uploaResult.message);
+    }
+
+    // 表示上传成功
+    this.title = ''; // 执行清空
+    this.htmlContent = '';
+
+    // 清空图片
+    this.imageId = '';
+    this.urlImage = '';
+    this.uploadFile.nativeElement.value = '';
   }
 
   /**
