@@ -97,13 +97,13 @@
             <!-- 标题 和排序 -->
             <div class="list-title flex-start-bottom">
                 <div class="flex-rest">All records</div>
-                <div class="list-refresh">
+                <div class="list-refresh" *ngIf="listSortType === 'random'">
                     <button nz-button nzType="primary">刷新</button>
                 </div>
                 <div class="list-title-select">
-                    <select>
-                        <option value="time">时间排序</option>
-                        <option value="random">随机排序</option>
+                    <select #listSortSelect (change)="selectSortType($event)">
+                        <option *ngFor="let sortType of optionSortType" [value]="sortType.value">{{sortType.lable}}
+                        </option>
                     </select>
                 </div>
             </div>
@@ -125,11 +125,11 @@
             </div>
 
             <!-- 分页部分 -->
-            <div class="record-list-pagination  flex-center">
+            <div class="record-list-pagination flex-center" *ngIf="listSortType === 'time'">
                 <div class="list-pagination-container flex-start-center">
 
                     <!-- 上一页 -->
-                    <div class="list-pagination-item list-pagination-left flex-center">
+                    <div class="list-pagination-item list-pagination-left flex-center" (click)="jumpPrePage()">
                         <svg viewBox="64 64 896 896" data-icon="left" width="1em" height="1em" fill="currentColor"
                             aria-hidden="true">
                             <path
@@ -140,6 +140,7 @@
 
                     <div *ngIf="pageTotal < 9" class="flex-start-center">
                         <div *ngFor="let pageKey of pageTotalToArray()" class="list-pagination-item"
+                            (click)="jumpPageBy(pageKey + 1)"
                             [ngClass]="{'pagination-item-selected': pageNum === (pageKey + 1)}">
                             {{pageKey + 1}}
                         </div>
@@ -148,37 +149,37 @@
                     <!-- 大于9页，并且当前页在1~5页内 -->
                     <div *ngIf="pageTotal > 9 && pageNum <= 5" class="flex-start-center">
                         <div *ngFor="let pageKey of [1, 2, 3, 4, 5]" class="list-pagination-item"
-                            [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
+                            (click)="jumpPageBy(pageKey)" [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
                             {{pageKey}}
                         </div>
                         <div class="list-pagination-item">...</div> <!-- 显示点点点和最后一页 -->
-                        <div class="list-pagination-item">{{pageTotal}}</div>
+                        <div class="list-pagination-item" (click)="jumpPageBy(pageTotal)">{{pageTotal}}</div>
                     </div>
 
                     <!-- 大于9页，并且当前页在倒数1~5页内 -->
                     <div *ngIf="pageTotal > 9 && pageNum >= (pageTotal - 5)" class="flex-start-center">
-                        <div class="list-pagination-item">1</div> <!-- 显示第一页和点点点 -->
+                        <div class="list-pagination-item" (click)="jumpPageBy(1)">1</div> <!-- 显示第一页和点点点 -->
                         <div class="list-pagination-item">...</div>
                         <div *ngFor="let pageKey of pageToRecipArray()" class="list-pagination-item"
-                            [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
+                            (click)="jumpPageBy(pageKey)" [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
                             {{pageKey}}
                         </div>
                     </div>
 
                     <!-- 大于9页，并且当前页 不在最后5位 也不在前5位. 表示在区间内 -->
                     <div *ngIf="pageTotal > 9 && pageNum > 5 && pageNum < (pageTotal - 5)" class="flex-start-center">
-                        <div class="list-pagination-item">1</div> <!-- 显示第一页和点点点 -->
+                        <div class="list-pagination-item" (click)="jumpPageBy(1)">1</div> <!-- 显示第一页和点点点 -->
                         <div class="list-pagination-item">...</div>
                         <div *ngFor="let pageKey of pageToIntervalArray()" class="list-pagination-item"
-                            [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
+                            (click)="jumpPageBy(pageKey)" [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
                             {{pageKey}}
                         </div>
                         <div class="list-pagination-item">...</div> <!-- 显示点点点和最后一页 -->
-                        <div class="list-pagination-item">{{pageTotal}}</div>
+                        <div class="list-pagination-item" (click)="jumpPageBy(pageTotal)">{{pageTotal}}</div>
                     </div>
 
                     <!-- 下一页 -->
-                    <div class="list-pagination-item list-pagination-right flex-center">
+                    <div class="list-pagination-item list-pagination-right flex-center" *ngIf="pageNum < pageTotal" (click)="jumpNexPage()">
                         <svg viewBox="64 64 896 896" data-icon="right" width="1em" height="1em" fill="currentColor"
                             aria-hidden="true">
                             <path
@@ -187,12 +188,12 @@
                         </svg>
                     </div>
 
-                    <!-- 搜索 -->
+                    <!-- 跳转输入 -->
                     <div class="list-pagination-input flex-start-center">
                         <div class="pagination-input-container">
                             <input [(ngModel)]="pageJumpInto" />
                         </div>
-                        <div class="pagination-input-submit">跳转</div>
+                        <div class="pagination-input-submit" (click)="pageJumpDataSubmit()">跳转</div>
                     </div>
                 </div>
             </div>

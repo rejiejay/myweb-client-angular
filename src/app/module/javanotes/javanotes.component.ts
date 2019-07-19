@@ -35,11 +35,16 @@ export class JavaNotesComponent implements OnInit {
 
   /**
    * 列表部分
+   *
+   * @param time 时间排序 就是 默认排序
+   * @param random 随机排序
    */
-  // 列表排序
-  // @param time 时间排序 就是 默认排序
-  // @param random 随机排序
   public listSortType = 'time';
+  @ViewChild('listSortSelect', null) listSortSelect: ElementRef;
+  public optionSortType = [
+    { value: 'time', lable: '时间排序' },
+    { value: 'random', lable: '随机排序' },
+  ];
   public listAll: [{
     id: number;
     title: string;
@@ -47,7 +52,10 @@ export class JavaNotesComponent implements OnInit {
     imageUrl: string;
     htmlContent: string;
   }];
-  // 分页相关
+
+  /**
+   * 分页相关
+   */
   public pageNum = 1; // 页码
   public pageTotal = 1; // 一共有多少页数据
   public pageJumpInto: number; // 页面输入跳转
@@ -229,22 +237,17 @@ export class JavaNotesComponent implements OnInit {
   }
 
   /**
-   * 刷新随机显示部分
+   * 随机部分方法
    */
+  // 刷新随机显示部分
   refreshTheRandom(event: any) {
     console.log('刷新随机显示部分');
   }
-
-  /**
-   * 编辑随机显示部分
-   */
+  // 编辑随机显示部分
   editTheRandom(event: any) {
     console.log('编辑随机显示部分');
   }
-
-  /**
-   * 删除随机显示部分
-   */
+  // 删除随机显示部分
   delTheRandom(event: any) {
     console.log('删除随机显示部分');
   }
@@ -266,6 +269,19 @@ export class JavaNotesComponent implements OnInit {
     this.randomImageUrl = item.imageUrl;
     this.randomHtmlContent = item.htmlContent;
   }
+  // 选择排序方法
+  selectSortType(event: any) {
+    const sortType = event.target.value;
+    this.listSortType = sortType;
+
+    // 如果切换为随机排序 当前页面改为 1页
+    if (sortType === 'random') {
+      this.pageNum = 1;
+    }
+
+    // 重新获取一遍列表数据
+    this.getNoteList(this.pageNum, this.listSortType);
+  }
   // 页数转换为页面需要的array方法
   pageTotalToArray() {
     return new Array(this.pageTotal).fill('').map((val, key) => key);
@@ -284,5 +300,48 @@ export class JavaNotesComponent implements OnInit {
     }
 
     return intervalArray;
+  }
+
+  /**
+   * 分页相关
+   */
+  // 返回上一页
+  jumpPrePage() {
+    const pageNum = this.pageNum;
+
+    if (pageNum > 1) {
+      this.pageNum = pageNum - 1;
+    }
+
+    this.getNoteList(this.pageNum, this.listSortType);
+  }
+  // 跳转某一页
+  jumpPageBy(PageNo: number) {
+    if (this.pageNum !== PageNo) {
+      this.pageNum = PageNo;
+
+      this.getNoteList(this.pageNum, this.listSortType);
+    }
+  }
+  // 下一页
+  jumpNexPage() {
+    this.pageNum = this.pageNum + 1;
+    this.getNoteList(this.pageNum, this.listSortType);
+  }
+  // 跳转输入
+  pageJumpDataSubmit() {
+    const pageTotal = this.pageTotal;
+    const pageJumpInto = this.pageJumpInto;
+
+    if (pageJumpInto >= pageTotal) {
+      this.pageJumpInto = pageTotal;
+    }
+
+    if (pageJumpInto <= 0) {
+      this.pageJumpInto = 1;
+    }
+
+    this.pageNum = this.pageJumpInto;
+    this.getNoteList(this.pageNum, 'time');
   }
 }
