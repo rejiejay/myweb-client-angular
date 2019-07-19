@@ -48,7 +48,7 @@
         </div>
 
         <div class="form-bottom-btn">
-            <div class="form-btn">
+            <div class="form-btn" *ngIf="noteId">
                 <div class="flex-center" style="border: 1px solid #ddd;">编辑</div>
             </div>
             <div class="form-btn">
@@ -111,7 +111,7 @@
             <!-- 内容 -->
             <div class="record-list-main">
 
-                <div *ngFor="let item of listAll; let key = index" class="list-main-item"
+                <div *ngFor="let item of listAll; let key = index" class="list-main-item" (click)="selectJavaNote(item)"
                     [ngClass]="{'list-item-left': key % 2 == 0}">
                     <div class="main-item-container">
                         <div class="list-item-title">{{item.title}}</div>

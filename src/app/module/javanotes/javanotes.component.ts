@@ -16,6 +16,7 @@ export class JavaNotesComponent implements OnInit {
   /**
    * 表单输入部分
    */
+  public noteId: number;
   public title: string;
   @ViewChild('uploadFile', null) uploadFile: ElementRef;
   public urlImage: SafeUrl; // 动态给img的src赋值blob,报不安全错误
@@ -25,8 +26,10 @@ export class JavaNotesComponent implements OnInit {
   /**
    * 随机显示部分
    */
+  public randomId: number;
   public randomTitle: string;
   // tslint:disable-next-line: max-line-length
+  public randomImageKey: string;
   public randomImageUrl: string;
   public randomHtmlContent: string;
 
@@ -37,14 +40,13 @@ export class JavaNotesComponent implements OnInit {
   // @param time 时间排序 就是 默认排序
   // @param random 随机排序
   public listSortType = 'time';
-  public listAll = [
-    // {
-    //   id: 0,
-    //   title: '',
-    //   imageUrl: '',
-    //   htmlContent: '',
-    // }
-  ];
+  public listAll: [{
+    id: number;
+    title: string;
+    imagekey: string;
+    imageUrl: string;
+    htmlContent: string;
+  }];
   // 分页相关
   public pageNum = 1; // 页码
   public pageTotal = 1; // 一共有多少页数据
@@ -72,7 +74,7 @@ export class JavaNotesComponent implements OnInit {
     /**
      * 初始化列表数据
      */
-    this.getNoteList(1, 'time');
+    this.getNoteList(this.pageNum, this.listSortType);
   }
 
   /**
@@ -81,16 +83,30 @@ export class JavaNotesComponent implements OnInit {
    * @param sort 排序方式 time random
    */
   async getNoteList(pageNo: number, sort: string) {
+    interface JavaNoteItem {
+      id: number;
+      title: string;
+      content: string;
+      imageUrl: string;
+      imagekey: string;
+      tag: string;
+      timestamp: number;
+    }
+
     const getNoteListResult = await this.basestorage.apiget(`/java/notes/list?pageNo=${pageNo ? pageNo : 1}&sort=${sort ? sort : 'time'}`);
 
     if (getNoteListResult.result !== 1) {
       return alert(`获取列表数据失败, 原因: ${getNoteListResult.message}`);
     }
 
-    this.listAll = getNoteListResult.data.javaNotes.map(val => {
+    // 一共有多少页
+    this.pageTotal = Math.ceil(getNoteListResult.data.total / 10);
+
+    this.listAll = getNoteListResult.data.javaNotes.map((val: JavaNoteItem) => {
       const item = {
         id: val.id,
         title: val.title,
+        imagekey: val.imagekey,
         imageUrl: '',
         htmlContent: val.content,
       };
@@ -101,7 +117,6 @@ export class JavaNotesComponent implements OnInit {
 
       return item;
     });
-    console.log(this.listAll)
   }
 
   /**
@@ -169,6 +184,9 @@ export class JavaNotesComponent implements OnInit {
     self.uploadFile.nativeElement.value = ''; // 因为考虑到用户会重复上传, 重复上传不会触发 onchange 所以要清空一下
   }
 
+  /**
+   * 新增一条笔记
+   */
   async addJavaNotes() {
     interface UploadData { title: string; imageId: string; htmlContent: string; }
     const htmlContent = this.htmlContent;
@@ -203,6 +221,11 @@ export class JavaNotesComponent implements OnInit {
     this.imageId = '';
     this.urlImage = '';
     this.uploadFile.nativeElement.value = '';
+
+    /**
+     * 重新获取一遍数据
+     */
+    this.getNoteList(this.pageNum, this.listSortType);
   }
 
   /**
@@ -229,6 +252,20 @@ export class JavaNotesComponent implements OnInit {
   /**
    * 列表部分方法
    */
+  // 选中一条数据
+  selectJavaNote(item: {
+    id: number;
+    title: string;
+    imagekey: string;
+    imageUrl: string;
+    htmlContent: string;
+  }) {
+    this.randomId = item.id;
+    this.randomTitle = item.title;
+    this.randomImageKey = item.imagekey;
+    this.randomImageUrl = item.imageUrl;
+    this.randomHtmlContent = item.htmlContent;
+  }
   // 页数转换为页面需要的array方法
   pageTotalToArray() {
     return new Array(this.pageTotal).fill('').map((val, key) => key);
