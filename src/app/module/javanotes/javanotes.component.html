@@ -52,7 +52,8 @@
                 <div class="flex-center" style="border: 1px solid #ddd;">编辑</div>
             </div>
             <div class="form-btn">
-                <div class="flex-center" (click)="addJavaNotes()" style="background-color: #1890ff; color: #fff;">新增</div>
+                <div class="flex-center" (click)="addJavaNotes()" style="background-color: #1890ff; color: #fff;">新增
+                </div>
             </div>
         </div>
 
@@ -93,7 +94,7 @@
     <div class="java-notes-list flex-column-center">
         <div class="list-center">
 
-            <!-- 标题 -->
+            <!-- 标题 和排序 -->
             <div class="list-title flex-start-bottom">
                 <div class="flex-rest">All records</div>
                 <div class="list-refresh">
@@ -110,19 +111,14 @@
             <!-- 内容 -->
             <div class="record-list-main">
 
-                <div class="list-main-item list-item-left">
+                <div *ngFor="let item of listAll; let key = index" class="list-main-item"
+                    [ngClass]="{'list-item-left': key % 2 == 0}">
                     <div class="main-item-container">
-                        <div class="list-item-title">val.title</div>
-                        <!-- <div class="list-item-content" [innerHTML]="randomHtmlContent"></div> -->
-                        <div class="list-item-content">val.constent</div>
-                    </div>
-                </div>
-
-                <div class="list-main-item">
-                    <div class="main-item-container">
-                        <div class="list-item-title">val.title</div>
-                        <!-- <div class="list-item-content" [innerHTML]="randomHtmlContent"></div> -->
-                        <div class="list-item-content">val.constent</div>
+                        <div class="list-item-title">{{item.title}}</div>
+                        <div class="list-item-image flex-center" *ngIf="item.imageUrl">
+                            <img [src]="item.imageUrl" alt="uploadImage" />
+                        </div>
+                        <div class="list-item-content" [innerHTML]="item.htmlContent"></div>
                     </div>
                 </div>
 
@@ -171,15 +167,15 @@
 
                     <!-- 大于9页，并且当前页 不在最后5位 也不在前5位. 表示在区间内 -->
                     <div *ngIf="pageTotal > 9 && pageNum > 5 && pageNum < (pageTotal - 5)" class="flex-start-center">
-                            <div class="list-pagination-item">1</div> <!-- 显示第一页和点点点 -->
-                            <div class="list-pagination-item">...</div>
-                            <div *ngFor="let pageKey of pageToIntervalArray()" class="list-pagination-item"
-                                [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
-                                {{pageKey}}
-                            </div>
-                            <div class="list-pagination-item">...</div> <!-- 显示点点点和最后一页 -->
-                            <div class="list-pagination-item">{{pageTotal}}</div>
+                        <div class="list-pagination-item">1</div> <!-- 显示第一页和点点点 -->
+                        <div class="list-pagination-item">...</div>
+                        <div *ngFor="let pageKey of pageToIntervalArray()" class="list-pagination-item"
+                            [ngClass]="{'pagination-item-selected': pageNum === pageKey}">
+                            {{pageKey}}
                         </div>
+                        <div class="list-pagination-item">...</div> <!-- 显示点点点和最后一页 -->
+                        <div class="list-pagination-item">{{pageTotal}}</div>
+                    </div>
 
                     <!-- 下一页 -->
                     <div class="list-pagination-item list-pagination-right flex-center">

@@ -55,8 +55,10 @@ export class JavaNotesComponent implements OnInit {
   }
 
   ngOnInit() {
+    /**
+     * 初始化 图片 绑定 上传文件 事件
+     */
     const uploadFile = this.uploadFile.nativeElement;
-    // 初始化 绑定 上传文件 事件
     uploadFile.onchange = (event: any) => this.uploadImageOnchange(event, this);
 
     /**
@@ -66,6 +68,40 @@ export class JavaNotesComponent implements OnInit {
       const DOM = document.getElementsByClassName('angular-editor-textarea')[0];
       DOM.setAttribute('style', 'min-height: 350px;');
     }, 200);
+
+    /**
+     * 初始化列表数据
+     */
+    this.getNoteList(1, 'time');
+  }
+
+  /**
+   * 初始化列表数据
+   * @param pageNo 分页
+   * @param sort 排序方式 time random
+   */
+  async getNoteList(pageNo: number, sort: string) {
+    const getNoteListResult = await this.basestorage.apiget(`/java/notes/list?pageNo=${pageNo ? pageNo : 1}&sort=${sort ? sort : 'time'}`);
+
+    if (getNoteListResult.result !== 1) {
+      return alert(`获取列表数据失败, 原因: ${getNoteListResult.message}`);
+    }
+
+    this.listAll = getNoteListResult.data.javaNotes.map(val => {
+      const item = {
+        id: val.id,
+        title: val.title,
+        imageUrl: '',
+        htmlContent: val.content,
+      };
+
+      if (val.imagekey) {
+        item.imageUrl = val.imageUrl;
+      }
+
+      return item;
+    });
+    console.log(this.listAll)
   }
 
   /**
