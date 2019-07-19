@@ -301,4 +301,50 @@ export class MyServiceService {
   apipost(requestURL: string, requesBody: object) {
     return this.GeneralRxjsHttp('post', requestURL, requesBody);
   }
+
+  async uploadImageByBase64(requestURL: string, requesBase64Body: string) {
+    const self = this;
+    const password = localStorage.getItem('x-rejiejay-password');
+
+    /**
+     * 上传图片完成后返回的参数
+     */
+    interface UploadImageResult {
+      result: number;
+      data: {
+        fileId: string;
+      };
+      message: string;
+    }
+
+    // 弹出模态框
+    MyLoading.show();
+
+    const httpUploadResult = await new Promise((resolve, reject) => self.http.post(`${environment.baseUrl}${requestURL}`,
+      requesBase64Body, {
+        headers: new HttpHeaders({
+          'Content-Type': 'text/plain;charset=UTF-8',
+          'x-rejiejay-authorization': password
+        })
+      }
+    ).subscribe((val: UploadImageResult) => {
+      if (val.result === 1) {
+        resolve(consequent.success(val.data, 'successful'));
+      } else {
+        alert(val.message);
+        reject(consequent.error(val.message, val.result, val.data));
+      }
+    }, error => {
+      alert(error);
+      reject(consequent.error(error, 0, null));
+    })
+    ).then(
+      (resolve: Consequencer) => resolve,
+      (error: Consequencer) => error
+    );
+
+    MyLoading.hide(); // 关闭模态框
+
+    return httpUploadResult; // 返回封装的结果即可
+  }
 }

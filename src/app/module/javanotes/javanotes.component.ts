@@ -5,6 +5,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { JavaNotesService } from './javanotes.service';
 import { MyServiceService } from './../../app.service';
 import { TimeConvert } from './../../../utils/TimeConvert';
+import { Consequencer, consequent } from './../../../utils/Consequencer';
 
 @Component({
   selector: 'app-javanotes',
@@ -54,18 +55,9 @@ export class JavaNotesComponent implements OnInit {
   }
 
   ngOnInit() {
-    const self = this;
     const uploadFile = this.uploadFile.nativeElement;
-
     // 初始化 绑定 上传文件 事件
-    uploadFile.onchange = (event: any) => {
-      const file = event.target.files[0];
-
-      // 动态给img的src赋值blob,报不安全错误
-      self.urlImage = self.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(file));
-
-      // uploadFile.value = ''; // 因为考虑到用户会重复上传, 重复上传不会触发 onchange 所以要清空一下
-    };
+    uploadFile.onchange = (event: any) => this.uploadImageOnchange(event, this);
 
     /**
      * 修复 kolkov/angular-editor 内联样式 高度写死问题
@@ -77,12 +69,57 @@ export class JavaNotesComponent implements OnInit {
   }
 
   /**
-   * 上传图片方法
+   * 点击图片
    */
   uploadImage(event: any) {
     const uploadFile = this.uploadFile.nativeElement;
 
     uploadFile.click();
+  }
+
+  /**
+   * 上传图片方法
+   */
+  async uploadImageOnchange(event: any, self: any) {
+    const file = event.target.files[0];
+
+    /**
+     * 读取base64位图片的方法
+     */
+    const imgReaderResult = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        resolve(consequent.success(reader.result, 'successful'));
+      };
+      reader.onerror = (error: any) => {
+        reject(consequent.error(error, null, null));
+      };
+    }).then(
+      (resolve: Consequencer) => resolve,
+      (error: Consequencer) => error
+    );
+
+    // 读取失败的情况
+    if (imgReaderResult.result !== 1) {
+      alert(`读取图片数据失败，原因：${imgReaderResult.message}`);
+      return;
+    }
+
+    const uploaResult = await this.basestorage.uploadImageByBase64('/upload/', imgReaderResult.data);
+
+    // 上传失败的情况
+    if (uploaResult.result !== 1) {
+      alert(`上传图片数据失败，原因：${uploaResult.message}`);
+      return;
+    }
+
+    self.imageId = uploaResult.data.fileId;
+
+    // 动态给img的src赋值blob,报不安全错误
+    self.urlImage = self.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(file));
+
+    self.uploadFile.nativeElement.value = ''; // 因为考虑到用户会重复上传, 重复上传不会触发 onchange 所以要清空一下
   }
 
   async addJavaNotes() {
