@@ -9,7 +9,7 @@
 
         <div class="notes-form-img">
             <div class="img-del-btn" *ngIf="imageId">
-                <div class="flex-center">删除该图片</div>
+                <div class="flex-center" (click)="cleanImage()">删除该图片</div>
             </div>
 
             <input type="file" name="file" #uploadFile style="display: none;" />

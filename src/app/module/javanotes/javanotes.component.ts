@@ -78,6 +78,17 @@ export class JavaNotesComponent implements OnInit {
   }
 
   /**
+   * 清空图片
+   */
+  cleanImage() {
+    if (confirm('你确定要删除这张图片吗?')) {
+      this.imageId = '';
+      this.urlImage = '';
+      this.uploadFile.nativeElement.value = '';
+    }
+  }
+
+  /**
    * 上传图片方法
    */
   async uploadImageOnchange(event: any, self: any) {
