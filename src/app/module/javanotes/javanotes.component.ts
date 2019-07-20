@@ -83,6 +83,11 @@ export class JavaNotesComponent implements OnInit {
      * 初始化列表数据
      */
     this.getNoteList(this.pageNum, this.listSortType);
+
+    /**
+     * 初始化随机获取一条数据
+     */
+    this.getRandomOneNotes();
   }
 
   /**
@@ -125,6 +130,39 @@ export class JavaNotesComponent implements OnInit {
 
       return item;
     });
+  }
+
+  /**
+   * 初始化随机获取一条数据
+   */
+  async getRandomOneNotes() {
+    const gettRandomNoteResult: {
+      result: number;
+      data: {
+        id: number;
+        title: string;
+        imageUrl: string;
+        imagekey: string;
+        content: string;
+        tag: string;
+        timestamp: number;
+      };
+      message: string;
+    } = await this.basestorage.apiget('/java/notes/get/random');
+
+
+    // 读取失败的情况
+    if (gettRandomNoteResult.result !== 1) {
+      return alert(`随机获取一条数据失败，原因：${gettRandomNoteResult.message}`);
+    }
+
+    const data = gettRandomNoteResult.data;
+
+    this.randomId = data.id;
+    this.randomTitle = data.title;
+    this.randomImageKey = data.imagekey;
+    this.randomImageUrl = data.imageUrl;
+    this.randomHtmlContent = data.content;
   }
 
   /**
@@ -239,13 +277,13 @@ export class JavaNotesComponent implements OnInit {
   /**
    * 随机部分方法
    */
-  // 刷新随机显示部分
-  refreshTheRandom(event: any) {
-    console.log('刷新随机显示部分');
-  }
   // 编辑随机显示部分
   editTheRandom(event: any) {
-    console.log('编辑随机显示部分');
+    this.noteId = this.randomId;
+    this.title = this.randomTitle;
+    this.urlImage = this.randomImageUrl;
+    this.imageId = this.randomImageKey;
+    this.htmlContent = this.randomHtmlContent;
   }
   // 删除随机显示部分
   delTheRandom(event: any) {
