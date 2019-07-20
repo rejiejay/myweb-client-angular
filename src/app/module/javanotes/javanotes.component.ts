@@ -255,6 +255,12 @@ export class JavaNotesComponent implements OnInit {
   /**
    * 列表部分方法
    */
+  // 随机获取10条数据刷新页面
+  getNoteListRandom() {
+    this.pageNum = 1;
+    this.listSortType = 'random';
+    this.getNoteList(this.pageNum, this.listSortType);
+  }
   // 选中一条数据
   selectJavaNote(item: {
     id: number;

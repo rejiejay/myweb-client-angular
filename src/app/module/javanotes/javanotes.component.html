@@ -97,7 +97,7 @@
             <!-- 标题 和排序 -->
             <div class="list-title flex-start-bottom">
                 <div class="flex-rest">All records</div>
-                <div class="list-refresh" *ngIf="listSortType === 'random'">
+                <div class="list-refresh" *ngIf="listSortType === 'random'" (click)="getNoteListRandom()">
                     <button nz-button nzType="primary">刷新</button>
                 </div>
                 <div class="list-title-select">
