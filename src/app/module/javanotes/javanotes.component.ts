@@ -175,6 +175,45 @@ export class JavaNotesComponent implements OnInit {
   }
 
   /**
+   * 编辑一条笔记
+   */
+  async editNotesFrom() {
+    interface EditData { id: number; title: string; imageId: string; htmlContent: string; }
+    const id = this.noteId;
+    const htmlContent = this.htmlContent;
+    const imageId = this.imageId;
+    let title = this.title;
+
+    // 内容不可为空
+    if (!htmlContent) {
+      return alert('内容不能为空!');
+    }
+
+    // 如果没有输入标题, 使用默认标题即可
+    if (!title) {
+      title = TimeConvert.dateToYYYYmmDDhhMM00(new Date());
+    }
+
+    // 开始上传编辑
+    const editData: EditData = { id, title, imageId, htmlContent };
+    const editResult = await this.basestorage.apipost('/java/notes/edit', editData);
+
+    if (editResult.result !== 1) {
+      // 表示上传编辑失败
+      console.log(editResult);
+      return alert(editResult.message);
+    }
+
+    this.cleanNotesFrom(); // 清空正在编辑的数据
+
+    /**
+     * 重新获取一遍数据是必须的操作
+     */
+    this.getRandomOneNotes();
+    this.getNoteList(this.pageNum, this.listSortType);
+  }
+
+  /**
    * 清空正在编辑的数据
    */
   cleanNotesFrom() {
@@ -274,14 +313,7 @@ export class JavaNotesComponent implements OnInit {
     }
 
     // 表示上传成功
-    this.noteId = null;
-    this.title = ''; // 执行清空
-    this.htmlContent = '';
-
-    // 清空图片
-    this.imageId = '';
-    this.urlImage = '';
-    this.uploadFile.nativeElement.value = '';
+    this.cleanNotesFrom(); // 清空正在编辑的数据
 
     /**
      * 重新获取一遍数据
