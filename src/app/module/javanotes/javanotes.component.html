@@ -49,11 +49,14 @@
 
         <div class="form-bottom-btn">
             <div class="form-btn" *ngIf="noteId">
-                <div class="flex-center" style="border: 1px solid #ddd;">编辑</div>
+                <div class="flex-center" style="background-color: #f1403c; color: #fff;">编辑</div>
             </div>
             <div class="form-btn">
                 <div class="flex-center" (click)="addJavaNotes()" style="background-color: #1890ff; color: #fff;">新增
                 </div>
+            </div>
+            <div class="form-btn" *ngIf="noteId">
+                <div class="flex-center" style="border: 1px solid #ddd;" (click)="cleanNotesFrom()">取消</div>
             </div>
         </div>
 
@@ -179,7 +182,8 @@
                     </div>
 
                     <!-- 下一页 -->
-                    <div class="list-pagination-item list-pagination-right flex-center" *ngIf="pageNum < pageTotal" (click)="jumpNexPage()">
+                    <div class="list-pagination-item list-pagination-right flex-center" *ngIf="pageNum < pageTotal"
+                        (click)="jumpNexPage()">
                         <svg viewBox="64 64 896 896" data-icon="right" width="1em" height="1em" fill="currentColor"
                             aria-hidden="true">
                             <path

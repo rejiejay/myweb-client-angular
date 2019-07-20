@@ -175,6 +175,20 @@ export class JavaNotesComponent implements OnInit {
   }
 
   /**
+   * 清空正在编辑的数据
+   */
+  cleanNotesFrom() {
+    this.noteId = null; // 执行清空
+    this.title = '';
+    this.htmlContent = '';
+
+    // 清空图片
+    this.imageId = '';
+    this.urlImage = '';
+    this.uploadFile.nativeElement.value = '';
+  }
+
+  /**
    * 清空图片
    */
   cleanImage() {
@@ -260,6 +274,7 @@ export class JavaNotesComponent implements OnInit {
     }
 
     // 表示上传成功
+    this.noteId = null;
     this.title = ''; // 执行清空
     this.htmlContent = '';
 
@@ -286,8 +301,30 @@ export class JavaNotesComponent implements OnInit {
     this.htmlContent = this.randomHtmlContent;
   }
   // 删除随机显示部分
-  delTheRandom(event: any) {
-    console.log('删除随机显示部分');
+  async delTheRandom(event: any) {
+    interface DelJavaData { id: number; }
+    const delJavaData: DelJavaData = { id: this.randomId };
+
+    if (confirm('确定要删除这条数据吗?')) {
+      const delJavaResult = await this.basestorage.apipost('/java/notes/del', delJavaData);
+
+      if (delJavaResult.result !== 1) {
+        // 表示删除失败
+        console.log(delJavaResult);
+        return alert(delJavaResult.message);
+      }
+
+      /**
+       * 删除成功的情况
+       */
+      if (this.noteId === this.randomId) { // 需要判断一下正在编辑的表单输入是否有删除的数据
+        this.cleanNotesFrom();
+      }
+
+      // 重新获取一遍数据是必须的操作
+      this.getRandomOneNotes();
+      this.getNoteList(this.pageNum, this.listSortType);
+    }
   }
 
   /**
