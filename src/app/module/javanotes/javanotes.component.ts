@@ -65,11 +65,20 @@ export class JavaNotesComponent implements OnInit {
   }
 
   ngOnInit() {
+    const self = this;
+
     /**
      * 初始化 图片 绑定 上传文件 事件
      */
     const uploadFile = this.uploadFile.nativeElement;
-    uploadFile.onchange = (event: any) => this.uploadImageOnchange(event, this);
+    uploadFile.onchange = (event: any) => self.uploadImageOnchange(event.target.files[0], self);
+
+    /**
+     * 初始化 粘贴板上传图片
+     * 因为后面会remove掉，所以这种形式实现
+     */
+    const uploadClipboardData = this.uploadClipboardData.bind(this);
+    document.addEventListener('paste', uploadClipboardData);
 
     /**
      * 修复 kolkov/angular-editor 内联样式 高度写死问题
@@ -88,6 +97,10 @@ export class JavaNotesComponent implements OnInit {
      * 初始化随机获取一条数据
      */
     this.getRandomOneNotes();
+  }
+
+  OnDestroy() {
+    document.removeEventListener('paste', this.uploadClipboardData);
   }
 
   /**
@@ -175,6 +188,35 @@ export class JavaNotesComponent implements OnInit {
   }
 
   /**
+   * 初始化 粘贴板上传图片
+   */
+  uploadClipboardData(event: any) {
+    const slef = this;
+
+    const clipboardItems = event.clipboardData && event.clipboardData.items;
+    let file = null;
+
+    if (!clipboardItems || clipboardItems.length <= 0) {
+      return;
+    }
+
+    // 检索剪切板items
+    for (const item of clipboardItems) {
+      if (item.type.indexOf('image') !== -1) {
+        file = item.getAsFile();
+        break;
+      }
+    }
+
+    if (file === null) {
+      return;
+    }
+
+    // 此时file就是剪切板中的图片文件
+    slef.uploadImageOnchange(file, slef);
+  }
+
+  /**
    * 编辑一条笔记
    */
   async editNotesFrom() {
@@ -241,9 +283,7 @@ export class JavaNotesComponent implements OnInit {
   /**
    * 上传图片方法
    */
-  async uploadImageOnchange(event: any, self: any) {
-    const file = event.target.files[0];
-
+  async uploadImageOnchange(file: any, self: any) {
     /**
      * 读取base64位图片的方法
      */
