@@ -4,7 +4,7 @@ import { LoginComponent } from './login.component';
 import { LoginRoutingModule } from './login.routing';
 import { FormsModule } from '@angular/forms';
 
-import { NzButtonModule } from 'ng-zorro-antd/button';
+// import { NzButtonModule } from 'ng-zorro-antd/button';
 
 @NgModule({
   declarations: [LoginComponent],
@@ -12,7 +12,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
     CommonModule,
     FormsModule,
 
-    NzButtonModule, // 引入 ng-zorro-antd 组件
+    // NzButtonModule, // 引入 ng-zorro-antd 组件
 
     LoginRoutingModule
   ]

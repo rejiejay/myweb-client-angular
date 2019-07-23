@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app.routing'; // 路由
 import { AppComponent } from './app.component';
 import { HomeComponent } from './module/home/home.component';
 import { MyServiceService } from './app.service';
-import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
+// import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
@@ -41,7 +41,7 @@ registerLocaleData(zh); // 中文
     BrowserAnimationsModule,
     HttpClientModule, // 引入Http模块
     FormsModule, // 引入模块，就可以在视图里面使用 [(ngModel)]="inputValue"
-    NgZorroAntdModule, // ant模块
+    // NgZorroAntdModule, // ant模块
     AngularEditorModule,
 
     AppRoutingModule, // 注入自定义路由模块
@@ -51,7 +51,7 @@ registerLocaleData(zh); // 中文
    * 配置服务(service)
    */
   providers: [
-    { provide: NZ_I18N, useValue: zh_CN },
+    // { provide: NZ_I18N, useValue: zh_CN },
 
     MyServiceService,
   ],

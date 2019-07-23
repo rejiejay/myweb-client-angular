@@ -9,7 +9,7 @@ import { HomeComponent } from './module/home/home.component';
  * 因为这里所属 app.module 模块下面的路由，所以必须先在app.module依赖注入
  */
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', loadChildren: () => import('./module/javanotes/javanotes.module').then(m => m.JavaNotesModule) },
   // 懒加载
   { path: 'login', loadChildren: () => import('./module/login/login.module').then(m => m.LoginModule) },
   { path: 'java/notes', loadChildren: () => import('./module/javanotes/javanotes.module').then(m => m.JavaNotesModule) },

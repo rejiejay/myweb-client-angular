@@ -70,14 +70,14 @@
                 <div class="random-title-des flex-rest">{{randomTitle ? randomTitle : '标题'}}</div>
 
                 <div class="title-btn flex-start-center">
-                    <div class="btn-click" (click)="getRandomOneNotes($event)">
-                        <button nz-button nzType="default">刷新</button>
+                    <div class="btn-click" (click)="getRandomOneNotes()">
+                        <button>刷新</button>
                     </div>
                     <div class="btn-click" (click)="editTheRandom($event)">
-                        <button nz-button nzType="primary">编辑</button>
+                        <button>编辑</button>
                     </div>
                     <div class="btn-click" (click)="delTheRandom($event)">
-                        <button nz-button nzType="danger">删除</button>
+                        <button>删除</button>
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
             <div class="list-title flex-start-bottom">
                 <div class="flex-rest">All records</div>
                 <div class="list-refresh" *ngIf="listSortType === 'random'" (click)="getNoteListRandom()">
-                    <button nz-button nzType="primary">刷新</button>
+                    <button>刷新</button>
                 </div>
                 <div class="list-title-select">
                     <select #listSortSelect (change)="selectSortType($event)">
