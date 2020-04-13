@@ -86,7 +86,14 @@ export class MyServiceService {
     const encryptDataStr = JSON.stringify(encryptData);
 
     // md5加密
-    const bodyMd5 = CryptoJS.MD5(reqParam).toString(); // 小写
+    let bodyMd5 = CryptoJS.MD5(reqParam).toString(); // 小写
+    // 因为字符串需要 32 位 ，但是 MD5加密也有不满32位的情况，所以这里我们手动填充
+    if (bodyMd5.length < 32) {
+      const diff = 32 - bodyMd5.length;
+      for (let i = 0; i < diff; i++) {
+        bodyMd5 += '0';
+      }
+    }
 
     const sKey = bodyMd5.substring(0, 32); // 密钥key 32 字节的AES密钥
     const ivParameter = bodyMd5.substring(bodyMd5.length - 16); // 向量 也是16位
